@@ -1,9 +1,9 @@
 import './NewTxnButtons.css';
 
-import iouInIcon from '../assets/iou-in.svg';
-import iouOutIcon from '../assets/iou-out.svg';
-import payInIcon from '../assets/pay-in.svg';
-import payOutIcon from '../assets/pay-out.svg';
+import iouInIcon from  './images/iou-in.svg';
+import iouOutIcon from './images/iou-out.svg';
+import payInIcon from './images/pay-in.svg';
+import payOutIcon from './images/pay-out.svg';
 
 interface NewTxnButtonsProps {
     personName?: string;

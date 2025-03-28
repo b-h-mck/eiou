@@ -17,7 +17,7 @@ const Layout = () => {
 
     return (
         <div className="layout">
-            <nav className={isNavOpen ? "open" : ""}>
+           <nav className={isNavOpen ? "open" : ""}>
                 <header>
                     <button className="nav-toggle" onClick={closeNav}> ← </button>
                 </header>
@@ -25,12 +25,6 @@ const Layout = () => {
                     <li>
                         <a href="/">Home</a>
                     </li>
-                    {/* <li>
-                        <a href="/person/1">Person</a>
-                    </li>
-                    <li>
-                        <a href="/txn/1">Txn</a>
-                    </li> */}
                 </ul>
                 <footer>
                     <p>© 2025 eiou.</p>
