@@ -1,0 +1,124 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.layout {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh; /* Ensure layout stretches to full page height */
+    width: 100%;
+}
+
+nav {
+    background-color: #333;
+    color: white;
+    width: 250px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
+    transition: transform 0.3s ease-in-out;
+    position: relative;
+    min-height: 100%; /* Stretch nav to full page height */
+}
+
+nav img {
+    width: 32px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Push footer to the bottom */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align links to the top */
+}
+
+nav ul li {
+    margin: 1rem 0;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+nav footer {
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+}
+
+nav header {
+    display: none; /* Hide header in nav */
+}
+
+header img {
+    max-height: 80px;
+}
+
+header .nav-toggle, nav .nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    background-color: white;
+    width: 50px;
+    height: 50px;
+}
+
+main {
+    flex-grow: 1;
+    padding: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        transform: translateX(-100%);
+        z-index: 1000;
+    }
+
+    nav.open {
+        transform: translateX(0);
+    }
+
+    header .nav-toggle, nav header {
+        display: block;
+    }
+
+    .content {
+        width: 100%;
+    }
+}

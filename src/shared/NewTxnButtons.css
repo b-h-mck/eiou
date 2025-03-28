@@ -1,0 +1,53 @@
+.newTxnButtons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.newTxnButtons .button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 0;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.newTxnButtons .button img {
+    width: 100%;
+    height: 100%;
+    margin-bottom: 5px;
+}
+
+.newTxnButtons .button span {
+    font-size: 14px;
+    color: #333;
+}
+
+.newTxnButtons .button:hover {
+    background-color: #e0e0e0;
+}
+
+.newTxnButtons .top-left {
+    border-top-left-radius: 15px;
+}
+
+.newTxnButtons .top-right {
+    border-top-right-radius: 15px;
+}
+
+.newTxnButtons .bottom-left {
+    border-bottom-left-radius: 15px;
+}
+
+.newTxnButtons .bottom-right {
+    border-bottom-right-radius: 15px;
+}
