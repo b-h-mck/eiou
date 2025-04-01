@@ -1,0 +1,184 @@
+.card-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px; /* Space between cards */
+    list-style: none; /* Remove default list styling */
+    padding: 0;
+    margin: 0;
+}
+
+.card-list li {
+    width: calc(25% - 16px); /* Adjust width for 4 cards per row with gap */
+    min-width: 160px; 
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+.card {
+    display: grid;
+    grid-template-columns: 1fr auto; /* Left column takes most of the width, right column is auto-sized */
+    grid-template-rows: auto auto auto; /* Three rows: title/edit button, balance, repay button */
+    gap: 8px; /* Space between grid items */
+    align-items: center; /* Vertically align items */
+    background-color: #f9f9f9; /* Light background for cards */
+    border: 1px solid #ddd; /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    padding: 10px;
+    width: 100%; /* Make the card fill the li */
+    height: auto; /* Allow the card to grow/shrink dynamically */
+    text-align: left; /* Align text to the left */
+    cursor: pointer; /* Make cards clickable */
+    transition: background-color 0.3s ease, height 0.3s ease; /* Smooth transition for height changes */
+    position: relative; /* For positioning child elements */
+}
+
+.card.selected {
+    background-color: #007bff; /* Highlight selected card */
+    color: white; /* Change text color for better contrast */
+}
+
+.card h4 {
+    grid-column: 1 / 2; /* Place in the first column */
+    grid-row: 1 / 2; /* Place in the first row */
+    margin: 0; /* Remove default margin */
+}
+
+.card .edit-button {
+    grid-column: 2 / 3; /* Place in the second column */
+    grid-row: 1 / 2; /* Place in the first row */
+    justify-self: end; /* Align to the far right */
+    background-color: #fff;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    padding: 4px 8px; /* Reduced padding */
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: none; /* Remove from layout when not visible */
+}
+
+.card.selected .edit-button {
+    display: block; /* Show the button when the card is selected */
+}
+
+.card p {
+    grid-column: 1 / -1; /* Span across both columns */
+    grid-row: 2 / 3; /* Place in the second row */
+    margin: 0; /* Remove default margin */
+    text-align: left; /* Align text to the left */
+}
+
+.card .repay-button {
+    grid-column: 1 / -1; /* Span across both columns */
+    grid-row: 3 / 4; /* Place in the third row */
+    justify-self: start; /* Align to the left */
+    background-color: #fff;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    padding: 4px 8px; /* Reduced padding */
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: none; /* Remove from layout when not visible */
+}
+
+.card.selected .repay-button {
+    display: block; /* Show the button when the card is selected */
+}
+
+.card:hover {
+    background-color: #e0f7fa; /* Light hover effect */
+}
+
+.card.selected:hover {
+    background-color: #0056b3; /* Darker blue on hover for selected card */
+}
+
+/* Add Card */
+.add-card {
+    border: 1px solid #80bfff; /* Lighter blue border for add-card */
+}
+
+/* Add Button */
+.add-card .add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #b3d9ff; /* Lighter blue background */
+    color: black; /* Black text for better contrast */
+    font-size: 1.5rem; /* Large text */
+    font-weight: bold;
+    border: none; /* Remove default button border */
+    border-radius: 0; /* No rounded corners */
+    width: 100%; /* Fill the card */
+    height: 100%; /* Fill the card */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-card .add-button:hover {
+    background-color: #80bfff; /* Slightly darker blue on hover */
+}
+
+/* Add Form */
+.add-card .add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background-color: #fff; /* White background */
+    border: none; /* No border */
+    border-radius: 8px; /* Match card's rounded corners */
+    width: 100%; /* Fill the card */
+    height: 100%; /* Fill the card */
+    padding: 16px; /* Add padding for spacing */
+    box-sizing: border-box; /* Include padding in width/height */
+}
+
+.add-form input {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%; /* Stretch input across the form */
+    box-sizing: border-box;
+}
+
+.add-form button {
+    padding: 8px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%; /* Stretch button across the form */
+    box-sizing: border-box;
+}
+
+.add-form button:first-of-type {
+    background-color: #007bff;
+    color: white;
+}
+
+.add-form button:last-of-type {
+    background-color: #f44336;
+    color: white;
+}
+
+.add-form button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-list li {
+        width: calc(50% - 16px); /* 2 cards per row on smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .card-list li {
+        width: 100%; /* 1 card per row on very small screens */
+    }
+}

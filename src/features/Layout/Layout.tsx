@@ -24,6 +24,7 @@ const Layout = () => {
                 <ul>
                     <li>
                         <a href="/">Home</a>
+                        <a href="/settings">Settings</a>
                     </li>
                 </ul>
                 <footer>

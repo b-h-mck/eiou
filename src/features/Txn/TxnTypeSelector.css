@@ -1,0 +1,65 @@
+.newTxnButtons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+    max-width: 600px;
+    max-height: 605px;
+}
+
+
+
+.newTxnButtons .button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9f9f9; /* Light background for buttons */
+    border: 1px solid #ddd; /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    padding: 14px;
+    cursor: pointer; /* Make buttons clickable */
+    text-align: center;
+    transition: background-color 0.3s ease;
+    border: none; /* Remove default button border */
+}
+
+.newTxnButtons .button.selected {
+    background-color: #007bff; /* Highlight selected button */
+    color: white; /* Change text color for better contrast */
+}
+
+.newTxnButtons .button:hover {
+    background-color: #e0f7fa; /* Light hover effect */
+}
+
+.newTxnButtons .button.selected:hover {
+    background-color: #0056b3; /* Darker blue on hover for selected button */
+}
+
+.newTxnButtons .button p {
+    margin: 5px 0;
+    font-size: 1.8em; /* Keep text large */
+    color: #333;
+}
+
+.newTxnButtons .button.selected p {
+    color: white; /* Ensure text is visible on selected button */
+}
+
+.newTxnButtons .top-left {
+    border-top-left-radius: 8px; /* Match rounded corners */
+}
+
+.newTxnButtons .top-right {
+    border-top-right-radius: 8px; /* Match rounded corners */
+}
+
+.newTxnButtons .bottom-left {
+    border-bottom-left-radius: 8px; /* Match rounded corners */
+}
+
+.newTxnButtons .bottom-right {
+    border-bottom-right-radius: 8px; /* Match rounded corners */
+}

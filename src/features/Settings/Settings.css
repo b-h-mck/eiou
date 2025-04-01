@@ -1,0 +1,23 @@
+.settings {
+    padding: 20px;
+}
+
+.settings h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.settings .clear-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.settings .clear-button:hover {
+    background-color: #d32f2f;
+}

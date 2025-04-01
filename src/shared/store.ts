@@ -1,0 +1,49 @@
+import { openDB } from "idb";
+
+const DB_NAME = "eiouDB";
+const PEOPLE_STORE = "persons";
+const TXNS_STORE = "txns";
+
+export const initDB = async () => {
+    const db = await openDB(DB_NAME, 1, {
+        upgrade(db) {
+            if (!db.objectStoreNames.contains(PEOPLE_STORE)) {
+                db.createObjectStore(PEOPLE_STORE, { autoIncrement: true });
+            }
+            if (!db.objectStoreNames.contains(TXNS_STORE)) {
+                db.createObjectStore(TXNS_STORE, { autoIncrement: true });
+            }
+        },
+    });
+    return db;
+};
+
+export const getAllPeople = async () => {
+    const db = await initDB();
+    return await db.getAll(PEOPLE_STORE);
+};
+
+export const addPersonToDB = async (person: { name: string; balance: number }) => {
+    const db = await initDB();
+    await db.add(PEOPLE_STORE, person);
+};
+
+export const clearAllPeople = async () => {
+    const db = await initDB();
+    await db.clear(PEOPLE_STORE);
+};
+
+export const getAllTxns = async () => {
+    const db = await initDB();
+    return await db.getAll(TXNS_STORE);
+};
+
+export const addTxnToDB = async (txn: { personId?: string; [key: string]: any }) => {
+    const db = await initDB();
+    await db.add(TXNS_STORE, txn);
+};
+
+export const clearAllTxns = async () => {
+    const db = await initDB();
+    await db.clear(TXNS_STORE);
+};
