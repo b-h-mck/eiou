@@ -11,12 +11,12 @@ const Settings = () => {
     };
 
     return (
-        <div className="settings">
-            <h2>Settings</h2>
+        <section className="settings">
+            <h1>Settings</h1>
             <button onClick={clearData} className="clear-button">
                 Clear All Data
             </button>
-        </div>
+        </section>
     );
 };
 

@@ -1,0 +1,85 @@
+/* Base container for the transaction list */
+.txn-list {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Table layout for wide screens */
+.txn-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+
+.txn-table th,
+.txn-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.txn-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.txn-table tr:hover {
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+/* Selected row styles */
+.txn-table tr.selected {
+    background-color: #e0f7fa; /* Light blue background for selected row */
+    font-weight: bold; /* Make the text bold */
+}
+
+/* Edit row styles */
+.txn-edit-row td {
+    background-color: #f9f9f9; /* Light gray background for edit row */
+    padding: 16px; /* Add padding for the edit form */
+    border-top: 2px solid #007bff; /* Highlight the edit row with a blue border */
+}
+
+/* Card layout for narrow screens */
+.txn-cards {
+    display: none; /* Hidden by default, shown on narrow screens */
+}
+
+.txn-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* Selected card styles */
+.txn-card.selected {
+    border: 2px solid #007bff; /* Blue border for selected card */
+    background-color: #e0f7fa; /* Light blue background for selected card */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slightly larger shadow for emphasis */
+}
+
+/* Edit card styles */
+.txn-edit-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: -8px; /* Slight overlap with the card above */
+    background-color: #f9f9f9; /* Light gray background for edit card */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .txn-table {
+        display: none; /* Hide table on narrow screens */
+    }
+
+    .txn-cards {
+        display: block; /* Show cards on narrow screens */
+    }
+}

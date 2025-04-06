@@ -1,124 +1,132 @@
-import { useState, useEffect } from "react";
-import PersonCards from "../Person/PersonCards";
-import NewTransactionButtons from "../Txn/TxnTypeSelector";
-import TxnEdit from "../Txn/TxnEdit";
-import { TxnEditableFields, Txn } from "../Txn/TxnModel";
+import { useState, useEffect, useMemo } from "react";
+import { TxnEditableFields, Txn, TxnCalculationsByPersonId, calculateTxns, TxnType } from "../Txn/TxnModel";
+import { calculatePeople, Person, PersonCalculations, PersonEditableFields } from "../Person/PersonModel";
 import {
     getAllPeople,
     addPersonToDB,
     getAllTxns,
     addTxnToDB,
+    putTxnInDB,
 } from "../../shared/store";
-
-import './Home.css';
+import HomeUi from "./HomeUi";
 
 const Home = () => {
-    const [txnType, setTxnType] = useState<null | { type: 'iou' | 'pay', direction: 'in' | 'out' }>(null);
-    const [person, setPerson] = useState<null | { id: string, name: string }>(null);
-    const [people, setPeople] = useState<{ id: string; name: string; balance: number }[]>([]);
-    const [txns, setTxns] = useState<Txn[]>([]);
+    const [txnType, setTxnType] = useState<TxnType | null>(null);
+    const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
+    const [people, setPeople] = useState<PersonCalculations[]>([]);
+    const [txnsByPersonId, setTxnsByPersonId] = useState<TxnCalculationsByPersonId>({});
 
-    // Load initial data from IndexedDB
+    const emptyTxnEditFields : TxnEditableFields = {
+        description: "",
+        notes: "",
+        date: new Date().toISOString(),
+        fullAmount: null,
+        splitWithMe: false,
+    };
+    const [txnEditFields, setTxnEditFields] = useState<TxnEditableFields>(emptyTxnEditFields);
+    
+    // Load and calculate all data from the IndexedDB. This is called on page load, and also whenever the data is updated to refresh the local state
+    // (not particularly efficient to fully reload every time, but we can fix it if and when we have performance issues)
+    const loadData = async () => {
+        const storedPeople = await getAllPeople();
+        const storedTxns = await getAllTxns();
+        const calculatedTxns = calculateTxns(storedTxns);
+        const calculatedPeople = calculatePeople(storedPeople, calculatedTxns);
+        setPeople(calculatedPeople);
+        setTxnsByPersonId(calculatedTxns);
+    };
+
+    const txnsById = useMemo(() => {
+        const allTxns = Object.values(txnsByPersonId).flatMap((txns) => txns);
+        return Object.fromEntries(allTxns.map((txn) => [txn.id, txn]));
+    }
+    , [txnsByPersonId]);
+
+    // Load the data on page load
     useEffect(() => {
-        const loadData = async () => {
-            const storedPeople = await getAllPeople();
-            const storedTxns = await getAllTxns();
-            setPeople(storedPeople);
-            setTxns(storedTxns);
-        };
-
         loadData();
     }, []);
 
-    // Add a person to IndexedDB and state
-    const addPerson = async (newPerson: { id: string; name: string; balance: number }) => {
-        await addPersonToDB(newPerson);
-        setPeople((prev) => [...prev, newPerson]);
+    // Add a person to IndexedDB and reload data
+    const addPerson = async (personEditableFields: PersonEditableFields) => {
+        const person : Person = {
+            ...personEditableFields,
+            id: crypto.randomUUID(),
+        };
+        await addPersonToDB(person);
+        await loadData();
+        setSelectedPersonId(person.id || null);
     };
 
-    // Add a transaction to IndexedDB and state
-    const addTxn = async (newTxn: Txn) => {
-        if (newTxn.id) {
-            await addTxnToDB(newTxn);
-            setTxns((prev) => [...prev, newTxn]);
+    // Add a transaction to IndexedDB and reload data
+    const addTxn = async (newTxn: TxnEditableFields) => {
+        if (!txnType) {
+            throw new Error("Transaction type is not selected");
+        }
+        const txn : Txn = {
+            ...newTxn,
+            id: crypto.randomUUID(),
+            personId: selectedPersonId || "Someone",
+            type: txnType
+
+        };
+        if (txn.id) {
+            await addTxnToDB(txn);
+            await loadData();
+            setTxnEditFields(emptyTxnEditFields);
         }
     };
 
-    // Handle click on the .people panel
-    const handlePeoplePanelClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if ((e.target as HTMLElement).closest("button")) {
-            return;
+    // Update a transaction in IndexedDB and reload data
+    const updateTxn = async (id: string, updatedTxn: TxnEditableFields) => {
+        const txn : Txn = {
+            ...txnsById[id],
+            ...updatedTxn
+        };
+        if (txn.id) {
+            await putTxnInDB(txn);
+            await loadData();
+            setTxnEditFields(emptyTxnEditFields);
         }
-        setPerson(null); // Clear the current selection
-    };
+    }
 
-    return (
-        <div className={`home ${!txnType ? 'no-newTxnDetails' : ''}`}>
-            <section className="newTxn">
-                <h2>New Transaction</h2>
-                <NewTransactionButtons
-                    selected={txnType}
-                    onChange={(p) => setTxnType(p)}
-                    personName={person?.name}
-                />
-            </section>
-            <section className="people" onClick={handlePeoplePanelClick}>
-                <h2>People</h2>
-                <PersonCards
-                    onSave={(person) => {
-                        const newPerson = { id: crypto.randomUUID(), name: person.name, balance: person.balance };
-                        addPerson(newPerson);
-                    }}
-                    onCardClick={(p) => setPerson(people.find((person) => person.id === p) || null)}
-                    people={people}
-                    selectedCard={person?.id ?? null}
-                />
-            </section>
-            {txnType && (
-                <section className="newTxnDetails">
-                    <TxnEdit
-                        type={txnType.type}
-                        direction={txnType.direction}
-                        personName={person?.name}
-                        txn={{
-                            description: "",
-                            notes: "",
-                            date: new Date().toISOString().split('T')[0], // Set current date
-                            fullAmount: null,
-                            splitWithMe: false,
-                        }}
-                        onChange={(txn: TxnEditableFields) => {
-                            console.log("Transaction updated:", txn);
-                        }}
-                        onSave={(txn: TxnEditableFields) => {
-                            const txnToAdd: Txn = {
-                                ...txn,
-                                id: crypto.randomUUID(),
-                                personId: person?.id,
-                                personName: person?.name,
-                                type: txnType.type,
-                                direction: txnType.direction,
-                            };
-                            addTxn(txnToAdd);
-                            setTxnType(null);
-                        }}
-                        onCancel={() => {
-                            console.log("Transaction canceled");
-                            setTxnType(null);
-                        }}
-                    />
-                </section>
-            )}
-            <section className="recentTxns">
-                <h2>Recent Transactions</h2>
-                <ul>
-                    {txns.map((txn) => (
-                        <li key={txn.id}>{txn.description || "No description"}</li>
-                    ))}
-                </ul>
-            </section>
-        </div>
-    );
+    const repayBalance = (personId: string) => {
+        const person = people.find((p) => p.id === personId);
+        const balance = person?.closingBalance || 0;
+        if (balance == 0) return;
+
+        const txnType = balance > 0 ? "theyPaid" : "iPaid";
+        setTxnType(txnType);
+        const newTxn : TxnEditableFields = {
+            description: "",
+            notes: "",
+            date: new Date().toISOString(),
+            fullAmount: Math.abs(balance),
+            splitWithMe: false,
+        };
+        setTxnEditFields(newTxn);
+    }
+
+
+
+
+    return <HomeUi
+        people={people}
+        txnsByPersonId={txnsByPersonId}
+        txnEditFields={txnEditFields}
+        selectedTxnType={txnType}
+        selectedPersonId={selectedPersonId}
+        onSelectTxnType={setTxnType}
+        onSelectPerson={setSelectedPersonId}
+        onRepayBalance={repayBalance}
+        onAddPerson={addPerson}
+        onAddTxn={addTxn}
+        onUpdateTxn={updateTxn}
+    />;
+
+
+
+    
 };
 
 export default Home;

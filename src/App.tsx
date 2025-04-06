@@ -3,6 +3,7 @@ import './App.css'
 import Layout from './features/Layout/Layout'
 import Home from './features/Home/Home'
 import Settings from './features/Settings/Settings'
+import Help from './features/Help/Help'
 
 function App() {
   return (
@@ -11,9 +12,7 @@ function App() {
         <Route element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="/settings" element={<Settings />} />
-          {/* <Route path="/person/:personId" element={<Person />} />
-          <Route path="/txn/:txnId" element={<Txn />} /> */}
-
+          <Route path="/help" element={<Help />} />
         </Route>
       </Routes>
   </BrowserRouter>

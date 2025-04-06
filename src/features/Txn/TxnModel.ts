@@ -1,3 +1,31 @@
+export type TxnType = 'iOwe' | 'theyOwe' | 'iPaid' | 'theyPaid'
+export function category(type: TxnType) : 'iou' | 'pay' {
+    switch (type) {
+        case 'iOwe':
+        case 'theyOwe':
+            return 'iou';
+        case 'iPaid':
+        case 'theyPaid':
+            return 'pay';
+    }
+}
+export function direction(type: TxnType) : 'debit' | 'credit' {
+    switch (type) {
+        case 'iOwe':
+        case 'theyPaid':
+            return 'credit';
+        case 'iPaid':
+        case 'theyOwe':
+            return 'debit';
+    }
+}
+
+export function negateIfCredit(type: TxnType, amount: number | null): number | null {
+    if (!amount) return amount;
+    return direction(type) === 'credit' ? -amount : amount;
+}
+
+
 export type TxnEditableFields = {
     description: string;
     notes: string;
@@ -7,28 +35,85 @@ export type TxnEditableFields = {
 };
 
 export type Txn = TxnEditableFields & {
-    id?: string;
+    id: string;
     personId?: string;
     personName?: string;
-    direction : 'in' | 'out';
-    type: 'iou' | 'pay';
+    type: TxnType;
 };
+
+export type TxnCalculations = Txn & {
+    finalAmount: number | null;
+    balanceBefore: number | null;
+    balanceAfter: number | null;
+};
+
+export type TxnCalculationsByPersonId = Record<string, TxnCalculations[]>;
 
 
 export function getTxnSummary(txn: Txn): string {
     const personName = txn.personName || 'Someone';
     let txnString = '';
-    const amount = txn.fullAmount && txn.splitWithMe ? txn.fullAmount / 2 : txn.fullAmount;
-    if (txn.type === 'iou') {
-        txnString += txn.direction === 'in' ? `${personName} owes me` : `I owe ${personName}`;
-    } else {
-        txnString += txn.direction === 'in' ? `${personName} paid me` : `I paid ${personName}`;
+    if (txn.type === 'iOwe') txnString += `I owe ${personName}`
+    else if (txn.type === 'theyOwe') txnString += `${personName} owes me`;
+    else if (txn.type === 'iPaid') txnString += `I paid ${personName}`;
+    else if (txn.type === 'theyPaid') txnString += `${personName} paid me`;
+
+    if (txn.fullAmount === 0) {
+        txnString += ' nothing';
     }
-    txnString += amount ? ` $${amount}` : '';
-    if (amount) {
+    else if (txn.fullAmount) {
+        const amount = txn.splitWithMe ? (txn.fullAmount || 0) / 2 : txn.fullAmount || 0;
+        txnString += amount ? ` $${amount}` : '';
     }
+
+
     if (txn.description) {
         txnString += ` for ${txn.description}`;
     }
     return txnString;
 }
+
+export function calculateTxns(txns: Txn[]): TxnCalculationsByPersonId {
+    txns = txns.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const result: TxnCalculationsByPersonId = {};
+    for (const txn of txns) {
+        const personId = txn.personId || 'unknown';
+        if (!result[personId]) {
+            result[personId] = [];
+        }
+        let finalAmount = txn.fullAmount;
+        if (finalAmount && txn.splitWithMe) 
+            finalAmount = finalAmount / 2;
+        finalAmount = negateIfCredit(txn.type, finalAmount);
+        
+        const balanceBefore = result[personId].length > 0 ? result[personId][result[personId].length - 1].balanceAfter : 0;
+        const txnWithCalculations: TxnCalculations = {
+            ...txn,
+            finalAmount,
+            balanceBefore,
+            balanceAfter: balanceBefore === null || finalAmount === null ? null : balanceBefore + finalAmount,
+        };
+        result[personId].push(txnWithCalculations);
+    }
+    return result;
+}
+// export function getTxnBalances(txns: Txn[], openingBalance: number): TxnWithBalances[] {
+//     txns = txns.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+//     const txnsWithBalances: TxnWithBalances[] = [];
+//     let currentBalance = openingBalance;
+//     for (const txn of txns) {
+//         const txnWithBalance: TxnWithBalances = {
+//             ...txn,
+//             balanceBefore: currentBalance,
+//             balanceAfter: currentBalance,
+//         };
+//         if (txn.direction === 'in') {
+//             currentBalance += txn.fullAmount || 0;
+//         } else {
+//             currentBalance -= txn.fullAmount || 0;
+//         }
+//         txnWithBalance.balanceAfter = currentBalance;
+//         txnsWithBalances.push(txnWithBalance);
+//     }
+//     return txnsWithBalances;
+// }

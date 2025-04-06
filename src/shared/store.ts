@@ -1,4 +1,6 @@
 import { openDB } from "idb";
+import { Person } from "../features/Person/PersonModel";
+import { Txn } from "../features/Txn/TxnModel";
 
 const DB_NAME = "eiouDB";
 const PEOPLE_STORE = "persons";
@@ -20,12 +22,12 @@ export const initDB = async () => {
 
 export const getAllPeople = async () => {
     const db = await initDB();
-    return await db.getAll(PEOPLE_STORE);
+    return await (db.getAll(PEOPLE_STORE) as Promise<Person[]>);
 };
 
-export const addPersonToDB = async (person: { name: string; balance: number }) => {
+export const addPersonToDB = async (person: Person) => {
     const db = await initDB();
-    await db.add(PEOPLE_STORE, person);
+    await db.add(PEOPLE_STORE, person)
 };
 
 export const clearAllPeople = async () => {
@@ -35,13 +37,18 @@ export const clearAllPeople = async () => {
 
 export const getAllTxns = async () => {
     const db = await initDB();
-    return await db.getAll(TXNS_STORE);
+    return await (db.getAll(TXNS_STORE) as Promise<Txn[]>);
 };
 
-export const addTxnToDB = async (txn: { personId?: string; [key: string]: any }) => {
+export const addTxnToDB = async (txn: Txn) => {
     const db = await initDB();
-    await db.add(TXNS_STORE, txn);
+    await db.add(TXNS_STORE, txn, txn.id);
 };
+
+export const putTxnInDB = async (txn: Txn) => {
+    const db = await initDB();
+    await db.put(TXNS_STORE, txn, txn.id);
+}
 
 export const clearAllTxns = async () => {
     const db = await initDB();

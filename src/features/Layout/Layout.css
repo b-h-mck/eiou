@@ -17,13 +17,19 @@ nav {
     color: white;
     width: 250px;
     flex-shrink: 0;
-    display: flex;
+    /* display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-between; */
     padding: 1rem;
     transition: transform 0.3s ease-in-out;
     position: relative;
-    min-height: 100%; /* Stretch nav to full page height */
+}
+
+nav .nav-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
 }
 
 nav img {
@@ -36,7 +42,7 @@ nav ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    flex-grow: 1; /* Push footer to the bottom */
+    flex-grow: 1; /* Allow ul to grow and fill available space */
     display: flex;
     flex-direction: column; /* Ensure items are in a column */
     justify-content: flex-start; /* Align links to the top */
@@ -57,6 +63,7 @@ nav ul li a {
 nav footer {
     font-size: 0.8rem;
     text-align: center;
+    padding-bottom: 1rem;
 }
 
 .content {

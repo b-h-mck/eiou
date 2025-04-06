@@ -18,18 +18,22 @@ const Layout = () => {
     return (
         <div className="layout">
            <nav className={isNavOpen ? "open" : ""}>
-                <header>
-                    <button className="nav-toggle" onClick={closeNav}> ← </button>
-                </header>
-                <ul>
-                    <li>
-                        <a href="/">Home</a>
-                        <a href="/settings">Settings</a>
-                    </li>
-                </ul>
-                <footer>
-                    <p>© 2025 eiou.</p>
-                </footer>
+                <div className="nav-container">
+                    <header>
+                        <button className="nav-toggle" onClick={closeNav}> ← </button>
+                    </header>
+                    <ul>
+                        <li>
+                            <a href="/">Home</a>
+                            <a href="/settings">Settings</a>
+                            <a href="/help">Help</a>
+                        </li>
+                    </ul>
+                    <footer>
+                        <p>© 2025 eiou.</p>
+                        <p>Licensed under the <a href="https://github.com/b-h-mck/eiou/blob/main/LICENSE.txt">MIT License</a></p>
+                    </footer>
+                </div>
             </nav>
             <div className="content">
                 <header>

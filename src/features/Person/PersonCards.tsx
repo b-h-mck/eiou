@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
 import './PersonCards.css';
-import { Person } from './PersonModel';
+import { getBalanceString, Person, PersonCalculations, PersonEditableFields } from './PersonModel';
 
 interface PersonCardsProps {
-    people: Person[];
-    onSave: (person: { name: string; balance: number }) => void;
-    onCardClick: (personId: string | null) => void;
-    selectedCard: string | null;
+    people: PersonCalculations[];
+    onAddSave?: (person: PersonEditableFields) => void;
+    onEditSave?: (person: PersonEditableFields) => void;
+    onCardSelect: (personId: string | null) => void;
+    onRepayBalance: (personId: string) => void;
+    selected: string | null;
 }
 
 const PersonCards: React.FC<PersonCardsProps> = ({
     people,
-    onSave,
-    onCardClick,
-    selectedCard: parentSelectedCard,
+    onAddSave,
+    onEditSave,
+    onCardSelect,
+    onRepayBalance,
+    selected: parentSelectedCard,
 }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [name, setName] = useState('');
@@ -32,9 +36,9 @@ const PersonCards: React.FC<PersonCardsProps> = ({
         setName(e.target.value);
     };
 
-    const handleSave = () => {
-        if (name !== '') {
-            onSave({ name, balance: 0 });
+    const handleAddSave = () => {
+        if (name !== '' && onAddSave) {
+            onAddSave({ name, openingBalance: 0 });
             setIsAdding(false);
             setName('');
         }
@@ -47,11 +51,17 @@ const PersonCards: React.FC<PersonCardsProps> = ({
     const handleCardClick = (person: Person) => {
         const newSelectedCard = selectedCard === person.id ? null : person.id;
         setSelectedCard(newSelectedCard ?? null);
-        onCardClick(newSelectedCard ?? null); // Notify parent of the new selection
+        onCardSelect(newSelectedCard ?? null);
+    };
+
+    const handleRepayClick = (person: Person) => {
+        if (onRepayBalance) {
+            onRepayBalance(person.id);
+        }
     };
 
     return (
-        <ul className="card-list">
+        <ul className="card-list" onClick={() => setSelectedCard(null)}>
             <li className="add-card">
                 {isAdding ? (
                     <div className="add-form">
@@ -62,13 +72,13 @@ const PersonCards: React.FC<PersonCardsProps> = ({
                             value={name}
                             onChange={handleInputChange}
                         />
-                        <button onClick={handleSave} disabled={name === ''}>
+                        <button onClick={handleAddSave} disabled={name === ''}>
                             Save
                         </button>
                         <button onClick={handleCancel}>Cancel</button>
                     </div>
                 ) : (
-                    <button onClick={handleAddClick} className="add-button">
+                    <button onClick={ handleAddClick} className="add-button">
                         + Add New
                     </button>
                 )}
@@ -76,7 +86,8 @@ const PersonCards: React.FC<PersonCardsProps> = ({
             {people.map((person) => (
                 <PersonCard
                     person={person}
-                    onClick={() => handleCardClick(person)}
+                    onCardClick={() => handleCardClick(person)}
+                    onRepayClick={() => handleRepayClick(person)}
                     isSelected={selectedCard === person.id}
                     key={person.id}
                 />
@@ -90,22 +101,29 @@ export default PersonCards;
 
 
 interface PersonCardProps {
-    person: Person;
-    onClick: () => void;
+    person: PersonCalculations;
+    onCardClick: () => void;
+    onRepayClick: () => void;
     isSelected: boolean;
 }
 
-const PersonCard: React.FC<PersonCardProps> = ({ person, onClick, isSelected }) => {
+const PersonCard: React.FC<PersonCardProps> = ({ person, onCardClick, onRepayClick, isSelected }) => {
+
+    const onListItemClick = (event: React.MouseEvent) => {
+        event.stopPropagation(); // Prevent event bubbling to parent li
+        onCardClick();
+    }
+    const onButtonClick = (event: React.MouseEvent) => {
+        event.stopPropagation(); // Prevent event bubbling to parent li
+        onRepayClick();
+    }
     return (
-        <li className={`card ${isSelected ? 'selected' : ''}`} onClick={onClick}>
+        <li className={`card ${isSelected ? 'selected' : ''}`} onClick={onListItemClick}>
             <h4>{person.name}</h4>
-            {isSelected && <button className="edit-button">Edit</button>}
             <p>
-                {person.balance >= 0
-                    ? `${person.name} owes $${person.balance}`
-                    : `You owe $${Math.abs(person.balance)}`}
+                {getBalanceString(person.name, person.closingBalance)}
             </p>
-            {isSelected && <button className="repay-button">Repay</button>}
+            {isSelected && person.closingBalance !== 0 && <button className="repay-button" onClick={onButtonClick}>Repay</button>}
         </li>
     );
 };

@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import { getTxnSummary, TxnEditableFields } from './TxnModel';
+import { category, getTxnSummary, Txn, TxnEditableFields, TxnType } from './TxnModel';
 import './TxnEdit.css';
 
 interface TxnEditProps {
     personName?: string;
-    direction: 'in' | 'out';
-    type: 'iou' | 'pay';
+    type: TxnType;
     txn: TxnEditableFields;
-    remainingBalance?: number;
     onChange: (txn: TxnEditableFields) => void;
     onSave: (txn: TxnEditableFields) => void;
     onCancel: () => void;
@@ -15,9 +13,8 @@ interface TxnEditProps {
 
 const TxnEdit = (props: TxnEditProps) => {
     const [txn, setTxn] = useState<TxnEditableFields>(props.txn);
-    const [unknownAmount, setUnknownAmount] = useState(false);
-    const [remainingBalanceChecked, setRemainingBalanceChecked] = useState(false);
-    const [splitWithMe, setSplitWithMe] = useState(false);
+    const [unknownAmount, setUnknownAmount] = useState(props.txn.fullAmount === null);
+    const [splitWithMe, setSplitWithMe] = useState(props.txn.splitWithMe);
     const [previousAmount, setPreviousAmount] = useState<number | null>(txn.fullAmount);
 
     const handleChange = (field: keyof TxnEditableFields, value: string | number | boolean | null) => {
@@ -34,19 +31,9 @@ const TxnEdit = (props: TxnEditProps) => {
         setUnknownAmount(checked);
         if (checked) {
             setPreviousAmount(txn.fullAmount);
-            handleChange('fullAmount', null); // Blank and disable Amount
+            handleChange('fullAmount', null);
         } else {
-            handleChange('fullAmount', previousAmount); // Restore previous value
-        }
-    };
-
-    const handleRemainingBalanceChange = (checked: boolean) => {
-        setRemainingBalanceChecked(checked);
-        if (checked) {
-            setPreviousAmount(txn.fullAmount);
-            handleChange('fullAmount', props.remainingBalance ?? 123); // Set to remaining balance
-        } else {
-            handleChange('fullAmount', previousAmount); // Restore previous value
+            handleChange('fullAmount', previousAmount);
         }
     };
 
@@ -54,14 +41,15 @@ const TxnEdit = (props: TxnEditProps) => {
         setSplitWithMe(checked);
         handleChange('splitWithMe', checked);
     };
-
-    const isSaveDisabled = !unknownAmount && (txn.fullAmount === null || txn.fullAmount === undefined);
+    const activeTxn : Txn = { ...txn, id: '0', personName: props.personName, type: props.type };
+    let isSaveDisabled = !unknownAmount && (txn.fullAmount === null || txn.fullAmount === undefined);
+    isSaveDisabled = isSaveDisabled || !props.personName;
 
     return (
         <div className="txn-edit">
-            <p>{getTxnSummary({ ...txn, personName: props.personName, direction: props.direction, type: props.type })}</p>
+            <p>{getTxnSummary(activeTxn)}</p>
             <form>
-                {props.type === 'iou' && (
+                {category(props.type) == 'iou' && (
                     <div className="checkbox-row">
                         <input
                             type="checkbox"
@@ -72,17 +60,6 @@ const TxnEdit = (props: TxnEditProps) => {
                         <label htmlFor="unknownAmount">Unknown Amount</label>
                     </div>
                 )}
-                {props.type === 'pay' && (
-                    <div className="checkbox-row">
-                        <input
-                            type="checkbox"
-                            id="remainingBalance"
-                            checked={remainingBalanceChecked}
-                            onChange={(e) => handleRemainingBalanceChange(e.target.checked)}
-                        />
-                        <label htmlFor="remainingBalance">Remaining Balance</label>
-                    </div>
-                )}
                 <label>
                     Amount:
                     <input
@@ -90,15 +67,13 @@ const TxnEdit = (props: TxnEditProps) => {
                         value={
                             unknownAmount
                                 ? ''
-                                : remainingBalanceChecked
-                                ? props.remainingBalance ?? 123
                                 : txn.fullAmount ?? ''
                         }
                         onChange={(e) => handleChange('fullAmount', e.target.value ? parseFloat(e.target.value) : null)}
-                        disabled={unknownAmount || remainingBalanceChecked}
+                        disabled={unknownAmount}
                     />
                 </label>
-                {props.type === 'iou' && (
+                {category(props.type) == 'iou' && (
                     <div className="checkbox-row">
                         <input
                             type="checkbox"
@@ -115,14 +90,6 @@ const TxnEdit = (props: TxnEditProps) => {
                         type="text"
                         value={txn.description}
                         onChange={(e) => handleChange('description', e.target.value)}
-                    />
-                </label>
-                <label>
-                    Date:
-                    <input
-                        type="date"
-                        value={txn.date}
-                        onChange={(e) => handleChange('date', e.target.value)}
                     />
                 </label>
                 <label>
