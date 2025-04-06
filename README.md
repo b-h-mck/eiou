@@ -1,4 +1,5 @@
 ![eiou](public/eiou-wide.svg)
+
 eiou is a small React app to allow users to record IOUs/payments and check balances. For more info, on what it does and how to use it, 
 [see the in-app help page](https://eiou.azurewebsites.net/).
 
@@ -22,7 +23,7 @@ The app is client-side only and has no server or external dependencies.
 - [ ] **Ergonomics:** There are improvements we can make to make data entry easier. Maybe a slider for the amount?
 - [ ] **Multiple ledgers:** Allow multiple ledgers, each with their own lists of people and transactions, to be stored on a single device.
 - [ ] **Authentication & cloud sync:** Let users authenticate and access the same ledger on multiple devices.
-- [ ] **Transaction sharing:** Let users share transactions. This is for convenience -- users will always retain full control over what they let into their ledger.
+- [ ] **Transaction sharing:** Let users share transactions. Users will always retain full control over what they let into their ledger.
 
 ## Contributing
 Contributions are welcome! If you find a bug or have an idea for a feature, please open an issue. If you'd like to
