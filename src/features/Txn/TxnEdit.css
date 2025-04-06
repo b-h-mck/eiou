@@ -95,11 +95,11 @@
     background-color: #d32f2f;
 }
 
-/* Disabled button styles */
+
 .txn-edit-buttons button:disabled {
-    background-color: #cccccc; /* Light gray background */
-    color: #666666; /* Darker gray text */
-    cursor: not-allowed; /* Change cursor to indicate disabled state */
-    opacity: 0.6; /* Reduce opacity for a more obvious disabled look */
-    pointer-events: none; /* Disable hover and click interactions */
+    background-color: #cccccc; 
+    color: #666666; 
+    cursor: not-allowed; 
+    opacity: 0.6; 
+    pointer-events: none; 
 }

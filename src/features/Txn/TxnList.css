@@ -1,10 +1,9 @@
-/* Base container for the transaction list */
+
 .txn-list {
     width: 100%;
     box-sizing: border-box;
 }
 
-/* Table layout for wide screens */
 .txn-table {
     width: 100%;
     border-collapse: collapse;
@@ -28,22 +27,19 @@
     cursor: pointer;
 }
 
-/* Selected row styles */
 .txn-table tr.selected {
-    background-color: #e0f7fa; /* Light blue background for selected row */
-    font-weight: bold; /* Make the text bold */
+    background-color: #e0f7fa; 
+    font-weight: bold; 
 }
 
-/* Edit row styles */
 .txn-edit-row td {
-    background-color: #f9f9f9; /* Light gray background for edit row */
-    padding: 16px; /* Add padding for the edit form */
-    border-top: 2px solid #007bff; /* Highlight the edit row with a blue border */
+    background-color: #f9f9f9; 
+    padding: 16px;
+    border-top: 2px solid #007bff;
 }
 
-/* Card layout for narrow screens */
 .txn-cards {
-    display: none; /* Hidden by default, shown on narrow screens */
+    display: none; 
 }
 
 .txn-card {
@@ -56,30 +52,27 @@
     cursor: pointer;
 }
 
-/* Selected card styles */
 .txn-card.selected {
-    border: 2px solid #007bff; /* Blue border for selected card */
-    background-color: #e0f7fa; /* Light blue background for selected card */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slightly larger shadow for emphasis */
+    border: 2px solid #007bff; 
+    background-color: #e0f7fa; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 }
 
-/* Edit card styles */
 .txn-edit-card {
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 16px;
-    margin-top: -8px; /* Slight overlap with the card above */
-    background-color: #f9f9f9; /* Light gray background for edit card */
+    margin-top: -8px; 
+    background-color: #f9f9f9; 
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     .txn-table {
-        display: none; /* Hide table on narrow screens */
+        display: none; 
     }
 
     .txn-cards {
-        display: block; /* Show cards on narrow screens */
+        display: block; 
     }
 }

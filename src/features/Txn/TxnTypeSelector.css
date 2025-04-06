@@ -14,51 +14,51 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #f9f9f9; /* Light background for buttons */
-    border: 1px solid #ddd; /* Subtle border */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    background-color: #f9f9f9; 
+    border: 1px solid #ddd; 
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 14px;
-    cursor: pointer; /* Make buttons clickable */
+    cursor: pointer;
     text-align: center;
     transition: background-color 0.3s ease;
 }
 
 .txnTypeSelector .button.selected {
-    background-color: #007bff; /* Highlight selected button */
-    color: white; /* Change text color for better contrast */
+    background-color: #007bff;
+    color: white;
 }
 
 .txnTypeSelector .button:hover {
-    background-color: #e0f7fa; /* Light hover effect */
+    background-color: #e0f7fa;
 }
 
 .txnTypeSelector .button.selected:hover {
-    background-color: #0056b3; /* Darker blue on hover for selected button */
+    background-color: #0056b3;
 }
 
 .txnTypeSelector .button p {
     margin: 5px 0;
-    font-size: 1.8em; /* Keep text large */
+    font-size: 1.8em;
     color: #333;
 }
 
 .txnTypeSelector .button.selected p {
-    color: white; /* Ensure text is visible on selected button */
+    color: white; 
 }
 
 .txnTypeSelector .top-left {
-    border-top-left-radius: 8px; /* Match rounded corners */
+    border-top-left-radius: 8px;
 }
 
 .txnTypeSelector .top-right {
-    border-top-right-radius: 8px; /* Match rounded corners */
+    border-top-right-radius: 8px; 
 }
 
 .txnTypeSelector .bottom-left {
-    border-bottom-left-radius: 8px; /* Match rounded corners */
+    border-bottom-left-radius: 8px;
 }
 
 .txnTypeSelector .bottom-right {
-    border-bottom-right-radius: 8px; /* Match rounded corners */
+    border-bottom-right-radius: 8px;
 }

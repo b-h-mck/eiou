@@ -83,7 +83,7 @@ const TxnList: React.FC<TxnListProps> = ({ txns, onTxnClick, onTxnSave }) => {
             <div className="txn-cards">
                 {txnColumns.map((row) => (
                     <Fragment key={row.txn.id}>
-                        <div className="txn-card" onClick={() => handleRowClick(row.txn.id)}>
+                        <div onClick={() => handleRowClick(row.txn.id)} className={selectedTxnId === row.txn.id ? "txn-card selected" : "txn-card"}>
                             {Object.entries(row.columns).map(([key, value]) => (
                                 <p key={key}><strong>{key}:</strong> {value}</p>
                             ))}

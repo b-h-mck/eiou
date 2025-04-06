@@ -1,77 +1,75 @@
 .home {
     display: grid;
-    grid-template-columns: minmax(0, 500px) 1fr; /* Two columns: .newTxn/.newTxnDetails and .people */
-    grid-template-rows: auto auto 1fr; /* Dynamic row heights */
-    gap: 16px; /* Space between grid items */
+    grid-template-columns: minmax(0, 500px) 1fr;
+    grid-template-rows: auto auto 1fr;
+    gap: 16px;
     padding: 16px;
     box-sizing: border-box;
     grid-template-areas:
         "newTxn people"
         "newTxnDetails people"
-        "recentTxns recentTxns"; /* Define layout areas */
+        "recentTxns recentTxns";
 }
 
 .newTxn {
-    grid-area: newTxn; /* Place .newTxn in the defined grid area */
+    grid-area: newTxn;
     box-sizing: border-box;
-    max-width: 500px; /* Cap width at 500px */
-    max-height: 355px; /* Cap height at 350px */
-    overflow: auto; /* Add scroll if content exceeds height */
+    max-width: 500px;
+    max-height: 355px;
+    overflow: auto;
 }
 
 .people {
-    grid-area: people; /* Place .people in the defined grid area */
+    grid-area: people;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
 }
 
 .newTxnDetails {
-    grid-area: newTxnDetails; /* Place .newTxnDetails in the defined grid area */
+    grid-area: newTxnDetails;
     box-sizing: border-box;
-    max-width: 500px; /* Cap width at 500px */
+    max-width: 500px;
 }
 
 .recentTxns {
-    grid-area: recentTxns; /* Place .recentTxns in the defined grid area */
+    grid-area: recentTxns;
     box-sizing: border-box;
 }
 
-/* Optional: Add some styling for sections */
 section {
-    background-color: #f9f9f9; /* Light background for sections */
-    border: 1px solid #ddd; /* Subtle border */
-    border-radius: 8px; /* Rounded corners */
+    background-color: #f9f9f9; 
+    border: 1px solid #ddd; 
+    border-radius: 8px; 
     padding: 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
 
-/* Adjust grid layout when .newTxnDetails is not visible */
 .home.no-newTxnDetails {
-    grid-template-rows: auto 1fr; /* Combine .newTxn and .people into one row */
+    grid-template-rows: auto 1fr; 
     grid-template-areas:
         "newTxn people"
-        "recentTxns recentTxns"; /* Adjust layout areas */
+        "recentTxns recentTxns"; 
 }
 
 /* Responsive adjustments for narrow screens */
 @media (max-width: 1000px) {
     .home {
-        grid-template-columns: 1fr; /* Stack all sections vertically */
-        grid-template-rows: auto auto auto auto; /* Ensure all rows stack properly */
+        grid-template-columns: 1fr; 
+        grid-template-rows: auto auto auto auto; 
         grid-template-areas:
             "newTxn"
             "people"
             "newTxnDetails"
-            "recentTxns"; /* Adjust layout areas for stacking */
+            "recentTxns"; 
     }
 
     .home.no-newTxnDetails {
-        grid-template-rows: auto auto auto; /* Adjust for no .newTxnDetails */
+        grid-template-rows: auto auto auto; 
         grid-template-areas:
             "newTxn"
             "people"
-            "recentTxns"; /* Adjust layout areas */
+            "recentTxns"; /
     }
 }
 
