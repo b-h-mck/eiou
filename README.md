@@ -1,4 +1,4 @@
-![eiou](eiou/public/logo.jpg)
+![eiou](public/eiou-wide.svg)
 eiou is a small React app to allow users to record IOUs/payments and check balances. For more info, on what it does and how to use it, 
 [see the in-app help page](https://eiou.azurewebsites.net/).
 
