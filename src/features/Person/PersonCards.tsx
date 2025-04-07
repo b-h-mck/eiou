@@ -14,7 +14,6 @@ interface PersonCardsProps {
 const PersonCards: React.FC<PersonCardsProps> = ({
     people,
     onAddSave,
-    onEditSave,
     onCardSelect,
     onRepayBalance,
     selected: parentSelectedCard,
