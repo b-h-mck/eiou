@@ -3,6 +3,7 @@ import { Outlet } from "react-router"
 import "./Layout.css"
 
 import logo from "../../assets/eiou-wide.svg"
+import { TiChevronLeftOutline, TiThMenuOutline } from "react-icons/ti"
 
 const Layout = () => {
     const [isNavOpen, setIsNavOpen] = useState(false)
@@ -20,7 +21,7 @@ const Layout = () => {
            <nav className={isNavOpen ? "open" : ""}>
                 <div className="nav-container">
                     <header>
-                        <button className="nav-toggle" onClick={closeNav}> ← </button>
+                        <button className="nav-toggle" onClick={closeNav}><TiChevronLeftOutline /></button>
                     </header>
                     <ul>
                         <li>
@@ -37,7 +38,7 @@ const Layout = () => {
             </nav>
             <div className="content">
                 <header>
-                    <button className="nav-toggle" onClick={toggleNav}> ☰ </button>
+                    <button className="nav-toggle" onClick={toggleNav}><TiThMenuOutline /></button>
                     <img src={logo} alt="eiou" />
                 </header>
                 <main>

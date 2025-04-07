@@ -37,7 +37,9 @@ nav img {
 
 nav ul {
     list-style: none;
-    padding: 0;
+
+    padding-top: 20px;
+    padding-left: 5px;
     margin: 0;
     flex-grow: 1; 
     display: flex;
@@ -55,6 +57,7 @@ nav ul li a {
     text-decoration: none;
     display: block; 
     padding: 0.5rem 0; 
+    font-size: 1.2rem;
 }
 
 nav footer {
@@ -79,7 +82,7 @@ nav footer {
     padding: 1rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: start;
 }
 
 .content main {
@@ -101,9 +104,16 @@ header .nav-toggle, nav .nav-toggle {
     background-color: white;
     width: 50px;
     height: 50px;
+    padding: 5px;
+    
 }
 
-@media (max-width: 768px) {
+.nav-toggle * {
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 1280px) {
     .layout {
         flex-direction: column;
     }

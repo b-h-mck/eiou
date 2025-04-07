@@ -14,7 +14,6 @@
 .newTxn {
     grid-area: newTxn;
     box-sizing: border-box;
-    max-width: 500px;
     max-height: 355px;
     overflow: auto;
 }
@@ -29,7 +28,6 @@
 .newTxnDetails {
     grid-area: newTxnDetails;
     box-sizing: border-box;
-    max-width: 500px;
 }
 
 .recentTxns {
@@ -53,7 +51,7 @@ section {
 }
 
 /* Responsive adjustments for narrow screens */
-@media (max-width: 1000px) {
+@media (max-width: 768px) {
     .home {
         grid-template-columns: 1fr; 
         grid-template-rows: auto auto auto auto; 
