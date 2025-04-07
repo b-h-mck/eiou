@@ -18,9 +18,8 @@ The app is client-side only and has no server or external dependencies.
 - [ ] **Import/export:** This is a high priority so we can give users a fighting chance to preserve their data on future updates.
 - [ ] **Other currencies:** This app is shamefully dollar-centric. We should allow users to select their own currency.
 - [ ] **Offline functionality:** This app is embarassingly offlineable. We should set up a service worker to allow full offline use.
-- [ ] **Updates & data migrations:** Provide a way to smoothly upgrade users to later versions of the app, including their data. 
-- [ ] **Multiway splitting:** We can currently split transactions between two people. We should be able to split them between three or more.
-- [ ] **Ergonomics:** There are improvements we can make to make data entry easier. Maybe a slider for the amount?
+- [ ] **Updates & data migrations:** Provide a way to smoothly upgrade users to later versions of the app, including preserving their data. 
+- [ ] **Multiway splitting:** Users can currently split transactions between themselves and one other person. We should be able to split them between three or more.
 - [ ] **Multiple ledgers:** Allow multiple ledgers, each with their own lists of people and transactions, to be stored on a single device.
 - [ ] **Authentication & cloud sync:** Let users authenticate and access the same ledger on multiple devices.
 - [ ] **Transaction sharing:** Let users share transactions. Users will always retain full control over what they let into their ledger.
