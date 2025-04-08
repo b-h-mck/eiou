@@ -30,6 +30,13 @@ export const addPersonToDB = async (person: Person) => {
     await db.add(PEOPLE_STORE, person)
 };
 
+export const addPeopleToDB = async (people: Person[]) => {
+    const db = await initDB();
+    for (const person of people) {
+        await db.add(PEOPLE_STORE, person);
+    }
+}
+
 export const clearAllPeople = async () => {
     const db = await initDB();
     await db.clear(PEOPLE_STORE);
@@ -44,6 +51,13 @@ export const addTxnToDB = async (txn: Txn) => {
     const db = await initDB();
     await db.add(TXNS_STORE, txn, txn.id);
 };
+
+export const addTxnsToDB = async (txns: Txn[]) => {
+    const db = await initDB();
+    for (const txn of txns) {
+        await db.add(TXNS_STORE, txn, txn.id);
+    }
+}
 
 export const putTxnInDB = async (txn: Txn) => {
     const db = await initDB();

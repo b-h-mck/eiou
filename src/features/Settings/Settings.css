@@ -1,13 +1,16 @@
 .settings {
     max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.settings h2 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+.settings h1 {
+    margin-bottom: 10px;
 }
 
-.settings button {
+.settings button,
+dialog button {
     display: block;
     color: white;
     border: none;
@@ -16,23 +19,58 @@
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s ease;
-    width: 150px;
+    width: 200px;
     text-align: center;
-    margin: 10px;
 }
 
-.settings .dangerous-button {
+.dangerous-button {
     background-color: #f44336;
 }
 
-.settings .dangerous-button:hover {
+.dangerous-button:hover {
     background-color: #d32f2f;
 }
 
-.settings .safe-button {
+.safe-button {
     background-color: #4CAF50;
 }
 
-.settings .safe-button:hover {
+.safe-button:hover {
     background-color: #388E3C;
+}
+
+.cancel-button {
+    background-color: #777777;
+}
+
+.cancel-button:hover {
+    background-color: #999999;
+}
+
+dialog button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+
+dialog form {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.message {
+    color: red;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+.message.fade-out {
+    opacity: 0;
 }
