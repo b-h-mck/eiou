@@ -60,9 +60,12 @@ const Settings = () => {
     };
 
     const clearData = async () => {
-        await clearAllPeople();
-        await clearAllTxns();
-        showMessage("All data cleared!");
+        const confirmed = window.confirm("Are you sure you want to clear all data? This action cannot be undone.");
+        if (confirmed) {
+            await clearAllPeople();
+            await clearAllTxns();
+            showMessage("All data cleared!");
+        }
     };
 
     return (
