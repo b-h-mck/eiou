@@ -1,5 +1,5 @@
 .settings {
-    padding: 20px;
+    max-width: 800px;
 }
 
 .settings h2 {
@@ -7,8 +7,8 @@
     margin-bottom: 20px;
 }
 
-.settings .clear-button {
-    background-color: #f44336;
+.settings button {
+    display: block;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -16,8 +16,23 @@
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s ease;
+    width: 150px;
+    text-align: center;
+    margin: 10px;
 }
 
-.settings .clear-button:hover {
+.settings .dangerous-button {
+    background-color: #f44336;
+}
+
+.settings .dangerous-button:hover {
     background-color: #d32f2f;
+}
+
+.settings .safe-button {
+    background-color: #4CAF50;
+}
+
+.settings .safe-button:hover {
+    background-color: #388E3C;
 }
