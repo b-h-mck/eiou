@@ -10,7 +10,7 @@ const Help = () => {
             <p className="warning">This application is in early development. Future upgrades may cause to you lose data. Please do not use it for anything critical.</p>
             <h2>Overview</h2>
             <p>
-                This app is an simple IOU tracker. It allows you to easily record when you owe money, when other people owe money to you, and when the debt is repaid,
+                This app is a simple IOU tracker. It allows you to easily record when you owe money, when other people owe money to you, and when the debt is repaid,
                 keeping track of the balance for each person along the way.
             </p>
             <p>
@@ -21,7 +21,7 @@ const Help = () => {
                 All functionality is available from the home screen, and is hopefully fairly intuitive. You can add people, add/edit transactions, and view the balance for each person.
             </p>
             <p>
-                To add a transaction, you need to select a person, and either enter an amount or tick "Unknown amount". You won't be able to save unless both of these are set.
+                When adding a transaction, either a number needs to be entered, or the "Unknown amount" checkbox needs to be checked. If the amount is unknown, the balance with the other person will also be unknown until the transaction is updated.
             </p>
             <p>
                 You can edit transactions by clicking/tapping them in the Recent Transactions list. You can't currently delete transactions (that will be added in a future version),
