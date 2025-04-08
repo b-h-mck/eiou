@@ -7,7 +7,6 @@ interface PersonCardsProps {
     onAddSave?: (person: PersonEditableFields) => void;
     onEditSave?: (person: PersonEditableFields) => void;
     onCardSelect: (personId: string | null) => void;
-    onRepayBalance: (personId: string) => void;
     selected: string | null;
 }
 
@@ -15,7 +14,6 @@ const PersonCards: React.FC<PersonCardsProps> = ({
     people,
     onAddSave,
     onCardSelect,
-    onRepayBalance,
     selected: parentSelectedCard,
 }) => {
     const [isAdding, setIsAdding] = useState(false);
@@ -53,11 +51,6 @@ const PersonCards: React.FC<PersonCardsProps> = ({
         onCardSelect(newSelectedCard ?? null);
     };
 
-    const handleRepayClick = (person: Person) => {
-        if (onRepayBalance) {
-            onRepayBalance(person.id);
-        }
-    };
 
     return (
         <ul className="card-list" onClick={() => setSelectedCard(null)}>
@@ -86,7 +79,6 @@ const PersonCards: React.FC<PersonCardsProps> = ({
                 <PersonCard
                     person={person}
                     onCardClick={() => handleCardClick(person)}
-                    onRepayClick={() => handleRepayClick(person)}
                     isSelected={selectedCard === person.id}
                     key={person.id}
                 />
@@ -102,19 +94,14 @@ export default PersonCards;
 interface PersonCardProps {
     person: PersonCalculations;
     onCardClick: () => void;
-    onRepayClick: () => void;
     isSelected: boolean;
 }
 
-const PersonCard: React.FC<PersonCardProps> = ({ person, onCardClick, onRepayClick, isSelected }) => {
+const PersonCard: React.FC<PersonCardProps> = ({ person, onCardClick, isSelected }) => {
 
     const onListItemClick = (event: React.MouseEvent) => {
         event.stopPropagation(); // Prevent event bubbling to parent li
         onCardClick();
-    }
-    const onButtonClick = (event: React.MouseEvent) => {
-        event.stopPropagation(); // Prevent event bubbling to parent li
-        onRepayClick();
     }
     return (
         <li className={`card ${isSelected ? 'selected' : ''}`} onClick={onListItemClick}>
@@ -122,7 +109,6 @@ const PersonCard: React.FC<PersonCardProps> = ({ person, onCardClick, onRepayCli
             <p>
                 {getBalanceString(person.name, person.closingBalance)}
             </p>
-            {isSelected && person.closingBalance !== 0 && <button className="repay-button" onClick={onButtonClick}>Repay</button>}
         </li>
     );
 };

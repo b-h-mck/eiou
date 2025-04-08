@@ -6,15 +6,14 @@
     padding: 16px;
     box-sizing: border-box;
     grid-template-areas:
-        "newTxn people"
+        "startHere people"
         "newTxnDetails people"
-        "recentTxns recentTxns";
+        "txnList txnList";
 }
 
-.newTxn {
-    grid-area: newTxn;
+.startHere {
+    grid-area: startHere;
     box-sizing: border-box;
-    max-height: 355px;
     overflow: auto;
 }
 
@@ -23,6 +22,11 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    min-width: 240px;
+}
+
+.people.hidden {
+    visibility: hidden;
 }
 
 .newTxnDetails {
@@ -30,8 +34,8 @@
     box-sizing: border-box;
 }
 
-.recentTxns {
-    grid-area: recentTxns;
+.txnList {
+    grid-area: txnList;
     box-sizing: border-box;
 }
 
@@ -46,8 +50,8 @@ section {
 .home.no-newTxnDetails {
     grid-template-rows: auto 1fr; 
     grid-template-areas:
-        "newTxn people"
-        "recentTxns recentTxns"; 
+        "startHere people"
+        "txnList txnList"; 
 }
 
 /* Responsive adjustments for narrow screens */
@@ -56,18 +60,18 @@ section {
         grid-template-columns: 1fr; 
         grid-template-rows: auto auto auto auto; 
         grid-template-areas:
-            "newTxn"
+            "startHere"
             "people"
             "newTxnDetails"
-            "recentTxns"; 
+            "txnList"; 
     }
 
     .home.no-newTxnDetails {
         grid-template-rows: auto auto auto; 
         grid-template-areas:
-            "newTxn"
+            "startHere"
             "people"
-            "recentTxns";
+            "txnList";
     }
 }
 

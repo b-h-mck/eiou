@@ -6,18 +6,22 @@ import TxnEdit from "./TxnEdit";
 
 interface TxnListProps {
     txns: TxnCalculations[];
-    onTxnClick: (txnId: string) => void;
+
+    selectedTxnId: string | null;
+    onSelectTxn: (txnId: string | null) => void;
+
+    editingTxn: TxnEditableFields | null;
+    onEditingTxnChange: (txn: TxnEditableFields) => void;
+
     onTxnSave: (txnId: string, txn: TxnEditableFields) => void;
 }
 
-const TxnList: React.FC<TxnListProps> = ({ txns, onTxnClick, onTxnSave }) => {
+const TxnList: React.FC<TxnListProps> = (props) => {
 
-    const [selectedTxnId, setSelectedTxnId] = useState<string | null>(null);
-
-    if (txns.length === 0) {
+    if (props.txns.length === 0) {
         return <div className="txn-list">No transactions found</div>;
     }
-    var txnColumns = txns.map((txn) => ({
+    var txnColumns = props.txns.map((txn) => ({
         txn: txn,
         columns: {
             "Date": new Date(txn.date).toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
@@ -29,23 +33,23 @@ const TxnList: React.FC<TxnListProps> = ({ txns, onTxnClick, onTxnSave }) => {
 
 
     const handleRowClick = (id: string) => {
-        if (selectedTxnId === id) {
-            setSelectedTxnId(null); // Deselect if already selected
+        if (props.selectedTxnId === id) {
+            props.onSelectTxn(null); // Deselect if already selected
         } else {
-            setSelectedTxnId(id); // Select the clicked row
+            props.onSelectTxn(id); // Select the clicked row
         }
-        onTxnClick(id);
+        props.onSelectTxn(id); // Notify parent component of selection
     };
 
     const handleSave = (txn: TxnEditableFields) => {
-        if (selectedTxnId) {
-            onTxnSave(selectedTxnId, txn);
-            setSelectedTxnId(null); // Deselect after saving
+        if (props.selectedTxnId) {
+            props.onTxnSave(props.selectedTxnId, txn);
+            props.onSelectTxn(null); // Deselect after saving
         }
     };
 
     const handleCancel = () => {
-        setSelectedTxnId(null); // Deselect on cancel
+        props.onSelectTxn(null); // Deselect on cancel
     };
 
     return (
@@ -62,15 +66,16 @@ const TxnList: React.FC<TxnListProps> = ({ txns, onTxnClick, onTxnSave }) => {
                 <tbody>
                     {txnColumns.map((row) => (
                         <Fragment key={row.txn.id}>
-                            <tr  onClick={() => handleRowClick(row.txn.id)} className={selectedTxnId === row.txn.id ? "selected" : ""}>
+                            <tr  onClick={() => handleRowClick(row.txn.id)} className={props.selectedTxnId === row.txn.id ? "selected" : ""}>
                                 {Object.values(row.columns).map((value, index) => (
                                     <td key={index}>{value}</td>
                                 ))}
                             </tr>
-                            {selectedTxnId === row.txn.id &&
+                            {props.selectedTxnId === row.txn.id && props.editingTxn &&
                                 <tr className="txn-edit-row">
                                     <td colSpan={Object.keys(row.columns).length}>
-                                        <TxnEdit txn={row.txn} personName={row.txn.personName} type={row.txn.type} onChange={() => {}} onSave={handleSave} onCancel={handleCancel} />
+                                        <TxnEdit txn={props.editingTxn} personName={row.txn.personName} type={row.txn.type} 
+                                        onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} />
                                     </td>
                                 </tr>
                             }
@@ -83,14 +88,14 @@ const TxnList: React.FC<TxnListProps> = ({ txns, onTxnClick, onTxnSave }) => {
             <div className="txn-cards">
                 {txnColumns.map((row) => (
                     <Fragment key={row.txn.id}>
-                        <div onClick={() => handleRowClick(row.txn.id)} className={selectedTxnId === row.txn.id ? "txn-card selected" : "txn-card"}>
+                        <div onClick={() => handleRowClick(row.txn.id)} className={props.selectedTxnId === row.txn.id ? "txn-card selected" : "txn-card"}>
                             {Object.entries(row.columns).map(([key, value]) => (
                                 <p key={key}><strong>{key}:</strong> {value}</p>
                             ))}
                         </div>
-                        {selectedTxnId === row.txn.id && (
+                        {props.selectedTxnId === row.txn.id && props.editingTxn && (
                             <div className="txn-edit-card">
-                                <TxnEdit txn={row.txn} personName={row.txn.personName} type={row.txn.type} onChange={() => {}} onSave={handleSave} onCancel={handleCancel} />
+                                <TxnEdit txn={props.editingTxn} personName={row.txn.personName} type={row.txn.type} onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} />
                             </div>
                         )}
                     </Fragment>

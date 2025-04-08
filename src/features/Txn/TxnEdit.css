@@ -51,6 +51,11 @@
     width: 100%;
 }
 
+.txn-edit h3, .txn-edit h4 {
+    margin: 5px;
+    color: #333;
+}
+
 .txn-edit input[disabled] {
     background-color: #f5f5f5;
     color: #999;

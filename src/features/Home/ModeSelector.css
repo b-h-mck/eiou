@@ -1,0 +1,58 @@
+.modeSelector {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.modeSelector .button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.modeSelector .button.selected {
+    background-color: #007bff;
+    color: white;
+}
+
+.modeSelector .button:hover {
+    background-color: #e0f7fa;
+}
+
+.modeSelector .button.selected:hover {
+    background-color: #0056b3;
+}
+
+.modeSelector .button:disabled {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    color: #aaa;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.modeSelector .button:disabled p {
+    color: #aaa;
+}
+
+.modeSelector .button p {
+    margin: 5px 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.modeSelector .button.selected p {
+    color: white;
+}
