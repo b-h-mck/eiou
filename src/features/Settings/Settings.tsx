@@ -1,6 +1,6 @@
 import "./Settings.css";
 import { addPeopleToDB, addTxnsToDB, clearAllPeople, clearAllTxns, getAllPeople, getAllTxns } from "../../shared/store";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 const Settings = () => {
     const [message, setMessage] = useState("");
