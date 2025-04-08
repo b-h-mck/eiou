@@ -1,7 +1,7 @@
 import { getTxnSummary, TxnCalculations, TxnEditableFields } from "./TxnModel";
 import "./TxnList.css";
 import { getBalanceString } from "../Person/PersonModel";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import TxnEdit from "./TxnEdit";
 
 interface TxnListProps {
