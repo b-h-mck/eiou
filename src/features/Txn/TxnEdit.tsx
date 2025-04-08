@@ -43,6 +43,8 @@ const TxnEdit = (props: TxnEditProps) => {
         setSplitWithMe(checked);
         handleChange('splitWithMe', checked);
     };
+
+
     //const activeTxn : Txn = { ...props.txn, id: '0', personName: props.personName, type: props.type };
     let isSaveDisabled = !unknownAmount && (props.txn.fullAmount === null || props.txn.fullAmount === undefined);
     isSaveDisabled = isSaveDisabled || !props.personName;
@@ -50,6 +52,7 @@ const TxnEdit = (props: TxnEditProps) => {
     let title: string = '';
     let subtitle: string = '';
     let showForm: boolean = true;
+    let maxSliderAmount: number = 100;
     if (category(props.type) == 'pay') {
         if (props.isEditingExistingTxn) {
             title = props.type === 'iPaid' ? `I paid ${props.personName}` : `${props.personName} paid me`;
@@ -67,10 +70,12 @@ const TxnEdit = (props: TxnEditProps) => {
         else if (props.type === 'iPaid') {
             title = `I currently owe ${props.personName} $${-props.currentBalance}`;
             subtitle = 'How much of this am I paying off?';
+            maxSliderAmount = -props.currentBalance;
         }
         else if (props.type === 'theyPaid') {
             title = `${props.personName} currently owes me $${props.currentBalance}`;
             subtitle = 'How much of this are they paying off?';
+            maxSliderAmount = props.currentBalance;
         }
     }
     else {
@@ -106,6 +111,19 @@ const TxnEdit = (props: TxnEditProps) => {
                         onChange={(e) => handleChange('fullAmount', e.target.value ? parseFloat(e.target.value) : null)}
                         disabled={unknownAmount && category(props.type) == 'iou'}
                     />
+                    <div className="slider-container">
+                        <span>{0}</span>
+                        <input
+                            type="range"
+                            min={0}
+                            max={maxSliderAmount}
+                            step={1}
+                            value={props.txn.fullAmount ?? 0}
+                            onChange={(e) => handleChange('fullAmount', parseFloat(e.target.value))}
+                            disabled={unknownAmount && category(props.type) == 'iou'}
+                        />
+                        <span>{maxSliderAmount}</span>
+                    </div>
                 </label>
                 {category(props.type) == 'iou' && (
                     <div className="checkbox-row">

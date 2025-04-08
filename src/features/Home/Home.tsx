@@ -26,7 +26,7 @@ const Home = () => {
         description: "",
         notes: "",
         date: new Date().toISOString(),
-        fullAmount: null,
+        fullAmount: 10,
         splitWithMe: false,
     };
     // The current state of the New Transaction input panel
