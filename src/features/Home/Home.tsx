@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { TxnEditableFields, Txn, TxnCalculationsByPersonId, calculateTxns, TxnType } from "../Txn/TxnModel";
 import { calculatePeople, Person, PersonCalculations, PersonEditableFields } from "../Person/PersonModel";
 import {
@@ -9,21 +9,68 @@ import {
     putTxnInDB,
 } from "../../shared/store";
 import HomeUi from "./HomeUi";
+import { Mode } from "./ModeSelector";
 
 const Home = () => {
-    const [txnType, setTxnType] = useState<TxnType | null>(null);
-    const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
-    const [people, setPeople] = useState<PersonCalculations[]>([]);
-    const [txnsByPersonId, setTxnsByPersonId] = useState<TxnCalculationsByPersonId>({});
 
-    const emptyTxnEditFields : TxnEditableFields = {
+    // The mode selected in the Start Here panel
+    const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
+
+    // The person selected in the People panel
+    const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
+
+    // The transaction selected in the Transaction List panel
+    const [selectedTxnId, setSelectedTxnId] = useState<string | null>(null);
+
+    const emptyTxn : TxnEditableFields = {
         description: "",
         notes: "",
         date: new Date().toISOString(),
         fullAmount: null,
         splitWithMe: false,
     };
-    const [txnEditFields, setTxnEditFields] = useState<TxnEditableFields>(emptyTxnEditFields);
+    // The current state of the New Transaction input panel
+    const [newTxn, setNewTxn] = useState<TxnEditableFields>(emptyTxn);
+
+    // The current state of the transaction selected for editing in the Transaction List panel
+    const [editingTxn, setEditingTxn] = useState<TxnEditableFields>(emptyTxn);
+
+    // All the people available in the people panel
+    const [people, setPeople] = useState<PersonCalculations[]>([]);
+
+    // All the transactions available in the transaction panel, grouped by person ID
+    const [txnsByPersonId, setTxnsByPersonId] = useState<TxnCalculationsByPersonId>({});
+
+    
+    // Calculate the selected person and transaction type.
+    const selectedPerson = useMemo(() => {
+        return people.find((person) => person.id === selectedPersonId) || null;
+    }
+    , [people, selectedPersonId]);
+
+    const txnType = useMemo<TxnType | null>(() => {
+        if (selectedMode === 'iOwe')
+            return 'iOwe';
+        if (selectedMode === 'theyOwe')
+            return 'theyOwe';
+
+        if (selectedMode === 'repay')
+        {
+            if (selectedPerson && (selectedPerson.closingBalance ?? 0) > 0) {
+                return 'theyPaid';
+            } else {
+                return 'iPaid';
+            }
+        }
+        return null;
+    }, [selectedMode, selectedPerson]);
+
+    
+    const txnsById = useMemo(() => {
+        const allTxns = Object.values(txnsByPersonId).flatMap((txns) => txns);
+        return Object.fromEntries(allTxns.map((txn) => [txn.id, txn]));
+    }
+    , [txnsByPersonId]);
     
     // Load and calculate all data from the IndexedDB. This is called on page load, and also whenever the data is updated to refresh the local state
     // (not particularly efficient to fully reload every time, but we can fix it if and when we have performance issues)
@@ -36,11 +83,6 @@ const Home = () => {
         setTxnsByPersonId(calculatedTxns);
     };
 
-    const txnsById = useMemo(() => {
-        const allTxns = Object.values(txnsByPersonId).flatMap((txns) => txns);
-        return Object.fromEntries(allTxns.map((txn) => [txn.id, txn]));
-    }
-    , [txnsByPersonId]);
 
     // Load the data on page load
     useEffect(() => {
@@ -73,7 +115,7 @@ const Home = () => {
         if (txn.id) {
             await addTxnToDB(txn);
             await loadData();
-            setTxnEditFields(emptyTxnEditFields);
+            setNewTxn(emptyTxn);
         }
     };
 
@@ -86,42 +128,88 @@ const Home = () => {
         if (txn.id) {
             await putTxnInDB(txn);
             await loadData();
-            setTxnEditFields(emptyTxnEditFields);
+            setNewTxn(emptyTxn);
         }
     }
 
-    const repayBalance = (personId: string) => {
-        const person = people.find((p) => p.id === personId);
-        const balance = person?.closingBalance || 0;
-        if (balance == 0) return;
 
-        const txnType = balance > 0 ? "theyPaid" : "iPaid";
-        setTxnType(txnType);
-        const newTxn : TxnEditableFields = {
-            description: "",
-            notes: "",
-            date: new Date().toISOString(),
-            fullAmount: Math.abs(balance),
-            splitWithMe: false,
-        };
-        setTxnEditFields(newTxn);
+    const setDefaultNewTxn = (mode: Mode | null, personId: string | null) => {
+        const selectedPerson = people.find((person) => person.id === personId) || null;
+        if (mode === 'repay' && selectedPerson?.closingBalance) {
+            setNewTxn({
+                ...emptyTxn,
+                fullAmount: Math.abs(selectedPerson.closingBalance),
+            });
+        } else {
+            setNewTxn(emptyTxn);
+        }
+    };
+
+    const selectMode = async (mode: Mode | null) => {
+        setSelectedMode(mode);
+        setDefaultNewTxn(mode, selectedPersonId);
     }
+
+    const selectPerson = async (id: string | null) => {
+        setSelectedPersonId(id);
+        setDefaultNewTxn(selectedMode, id);
+    }
+
+    const selectTxn = async (id: string | null) => {
+        setSelectedTxnId(id);
+        if (id) {
+            const txn = txnsById[id];
+            if (txn) {
+                setEditingTxn(txn);
+            }
+        } else {
+            setEditingTxn(emptyTxn);
+        }
+    };
+
+
 
 
 
 
     return <HomeUi
+        // people={people}
+        // txnsByPersonId={txnsByPersonId}
+        // newTxn={newTxn}
+        // editingTxn={editingTxn}
+        // onNewTxnChange={setNewTxn}
+        // onEditingTxnChange={setEditingTxn}
+        // selectedMode={selectedMode}
+        // txnType={txnType}
+        // selectedPersonId={selectedPersonId}
+        // onSelectMode={setSelectedMode}
+        // onSelectPerson={selectPerson}
+        // onAddPersonSave={addPerson}
+        // onAddTxn={addTxn}
+        // onUpdateTxn={updateTxn}
         people={people}
         txnsByPersonId={txnsByPersonId}
-        txnEditFields={txnEditFields}
-        selectedTxnType={txnType}
+    
+        newTxn={newTxn}
+        onNewTxnChange={setNewTxn}
+
+        editingTxn={editingTxn}
+        onEditingTxnChange={setEditingTxn}
+
+        selectedMode={selectedMode}
+        onSelectMode={selectMode}
+
         selectedPersonId={selectedPersonId}
-        onSelectTxnType={setTxnType}
-        onSelectPerson={setSelectedPersonId}
-        onRepayBalance={repayBalance}
-        onAddPerson={addPerson}
-        onAddTxn={addTxn}
-        onUpdateTxn={updateTxn}
+        onSelectPerson={selectPerson}
+
+        selectedTxnId={selectedTxnId}
+        onSelectTxn={selectTxn}
+
+        txnType={txnType}
+
+        onAddPersonSave={addPerson}
+        onAddTxnSave={addTxn}
+        onUpdateTxnSave={updateTxn}
     />;
 
 

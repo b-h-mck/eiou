@@ -23,7 +23,7 @@
 }
 
 .txn-table tr:hover {
-    background-color: #f9f9f9;
+    background-color: #e0f7fa;
     cursor: pointer;
 }
 
@@ -50,6 +50,13 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: #fff;
     cursor: pointer;
+}
+
+/* Add hover effect for cards */
+.txn-card:hover {
+    background-color: #e0f7fa; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    border: 1px solid #007bff; 
 }
 
 .txn-card.selected {

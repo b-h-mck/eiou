@@ -4,24 +4,35 @@ import { PersonCalculations, PersonEditableFields } from "../Person/PersonModel"
 import TxnEdit from "../Txn/TxnEdit";
 import TxnList from "../Txn/TxnList";
 import { Txn, TxnCalculationsByPersonId, TxnEditableFields, TxnType } from "../Txn/TxnModel";
-import TxnTypeSelector from "../Txn/TxnTypeSelector";
 
 export interface HomeUiProps {
     people: PersonCalculations[];
     txnsByPersonId: TxnCalculationsByPersonId;
-    txnEditFields : TxnEditableFields;
 
-    selectedTxnType: TxnType | null;
+    newTxn: TxnEditableFields;
+    onNewTxnChange: (txn: TxnEditableFields) => void;
+
+    editingTxn: TxnEditableFields;
+    onEditingTxnChange: (txn: TxnEditableFields) => void;
+
+    selectedMode: Mode | null;
+    onSelectMode: (mode: Mode | null) => void;
+
     selectedPersonId: string | null;
-    onSelectTxnType: (txnType: TxnType | null) => void;
     onSelectPerson: (personId: string | null) => void;
-    onRepayBalance: (personId: string) => void;
-    onAddPerson: (person: PersonEditableFields) => void;
-    onAddTxn: (txn: TxnEditableFields) => void;
-    onUpdateTxn: (id: string, txn: TxnEditableFields) => void;
+
+    selectedTxnId: string | null;
+    onSelectTxn: (txnId: string | null) => void;
+
+    txnType: TxnType | null;
+
+    onAddPersonSave: (person: PersonEditableFields) => void;
+    onAddTxnSave: (txn: TxnEditableFields) => void;
+    onUpdateTxnSave: (id: string, txn: TxnEditableFields) => void;
 }
 
 import './Home.css';
+import ModeSelector, { Mode } from "./ModeSelector";
 
 
 const HomeUi = (props: HomeUiProps) => {
@@ -49,59 +60,69 @@ const HomeUi = (props: HomeUiProps) => {
         }
     }, [props.txnsByPersonId, props.selectedPersonId]);
 
+    const showPeople = props.selectedMode || props.selectedPersonId;
+    const showTxnDetails = props.txnType && selectedPerson !== null;
+
+
+
     return (
-        <div className={`home ${!props.selectedTxnType ? 'no-newTxnDetails' : ''}`}>
-            <section className="newTxn">
-                <h2>New Transaction</h2>
-                <TxnTypeSelector
-                    selected={props.selectedTxnType}
-                    onChange={(p) => props.onSelectTxnType(p)}
+        <div className={`home ${showTxnDetails ? '' : 'no-newTxnDetails'}`}>
+            <section className="startHere">
+                <h2>Start here</h2>
+                <ModeSelector
                     personName={selectedPerson?.name}
-                />
+                    onChange={props.onSelectMode}
+                    selected={props.selectedMode} />
             </section>
-            <section className="people" onClick={handlePeoplePanelClick}>
-                <h2>People</h2>
+            <section className={`people ${showPeople ? '' : 'hidden'}`} onClick={handlePeoplePanelClick}>
+                {props.selectedMode === 'iOwe' && (<h2>Who do I owe?</h2>)}
+                {props.selectedMode === 'theyOwe' && (<h2>Who owes me?</h2>)}
+                {props.selectedMode === 'multiOwe' && (<h3>Select everyone involved (besides yourself)</h3>)}
+                {props.selectedMode === 'repay' && (<h3>Who's repaying or getting repaid?</h3>)}
+                {(props.selectedMode === 'viewBalances' || !props.selectedMode) && (<h3>Select a person to filter the transaction list</h3>)}
                 <PersonCards
-                    onAddSave={props.onAddPerson}
+                    onAddSave={props.onAddPersonSave}
                     onCardSelect={props.onSelectPerson}
-                    onRepayBalance={props.onRepayBalance}
                     people={props.people}
                     selected={props.selectedPersonId}
                 />
             </section>
-            {props.selectedTxnType && (
+            {showTxnDetails && (
                 <section className="newTxnDetails">
                     <TxnEdit
-                        type={props.selectedTxnType}
+                        type={props.txnType!}
                         personName={selectedPerson?.name}
-                        txn={props.txnEditFields}
-                        onChange={(txn: TxnEditableFields) => {
-                            console.log("Transaction updated:", txn);
-                        }}
+                        txn={props.newTxn}
+                        currentBalance={selectedPerson?.closingBalance ?? undefined}
+                        isEditingExistingTxn={false}
+                        onChange={props.onNewTxnChange}
                         onSave={(txn: TxnEditableFields) => {
-                            if (!props.selectedTxnType) return;
                             const txnToAdd: Txn = {
                                 ...txn,
                                 id: crypto.randomUUID(),
                                 personId: selectedPerson?.id,
                                 personName: selectedPerson?.name,
-                                type: props.selectedTxnType,
+                                type: props.txnType!
                             };
-                            props.onAddTxn(txnToAdd);
-                            props.onSelectTxnType(null);
+                            props.onAddTxnSave(txnToAdd);
+                            props.onSelectMode(null);
                         }}
                         onCancel={() => {
                             console.log("Transaction canceled");
-                            props.onSelectTxnType(null);
+                            props.onSelectMode(null);
                         }}
                     />
                 </section>
             )}
-            <section className="recentTxns">
-                <h2>Recent Transactions</h2>
-                <TxnList txns={recentTransactions} 
-                    onTxnClick={() => {}}
-                    onTxnSave={props.onUpdateTxn}
+            <section className="txnList">
+                {selectedPerson && (<h2>Transactions with {selectedPerson.name}</h2>)}
+                {!selectedPerson && (<h2>All Transactions</h2>)}
+                <TxnList txns={recentTransactions}
+                    selectedTxnId={props.selectedTxnId}
+                    onSelectTxn={props.onSelectTxn}
+                    editingTxn={props.editingTxn}
+                    onEditingTxnChange={props.onEditingTxnChange}
+                    onTxnSave={props.onUpdateTxnSave}
                      />
             </section>
         </div>

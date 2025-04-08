@@ -61,6 +61,10 @@ export function getTxnSummary(txn: Txn): string {
     if (txn.fullAmount === 0) {
         txnString += ' nothing';
     }
+    else if (txn.fullAmount == null) {
+        txnString += ' an unknown amount';
+
+    }
     else if (txn.fullAmount) {
         const amount = txn.splitWithMe ? (txn.fullAmount || 0) / 2 : txn.fullAmount || 0;
         txnString += amount ? ` $${amount}` : '';
