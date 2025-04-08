@@ -91,11 +91,11 @@ const TxnEdit = (props: TxnEditProps) => {
                             checked={unknownAmount}
                             onChange={(e) => handleUnknownAmountChange(e.target.checked)}
                         />
-                        <label htmlFor="unknownAmount">Unknown Amount</label>
+                        <label htmlFor="unknownAmount">Unknown amount</label>
                     </div>
                 )}
                 <label>
-                    Amount:
+                    Full amount:
                     <input
                         type="number"
                         value={
@@ -115,7 +115,7 @@ const TxnEdit = (props: TxnEditProps) => {
                             checked={splitWithMe}
                             onChange={(e) => handleSplitWithMeChange(e.target.checked)}
                         />
-                        <label htmlFor="splitWithMe">Split With Me</label>
+                        <label htmlFor="splitWithMe">Split with me</label>
                     </div>
                 )}
                 <label>

@@ -38,7 +38,6 @@ const TxnList: React.FC<TxnListProps> = (props) => {
         } else {
             props.onSelectTxn(id); // Select the clicked row
         }
-        props.onSelectTxn(id); // Notify parent component of selection
     };
 
     const handleSave = (txn: TxnEditableFields) => {

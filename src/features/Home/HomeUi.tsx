@@ -97,13 +97,12 @@ const HomeUi = (props: HomeUiProps) => {
                         isEditingExistingTxn={false}
                         onChange={props.onNewTxnChange}
                         onSave={(txn: TxnEditableFields) => {
-                            //if (!props.selectedTxnType) return;
                             const txnToAdd: Txn = {
                                 ...txn,
                                 id: crypto.randomUUID(),
                                 personId: selectedPerson?.id,
                                 personName: selectedPerson?.name,
-                                type: 'iOwe',
+                                type: props.txnType!
                             };
                             props.onAddTxnSave(txnToAdd);
                             props.onSelectMode(null);
