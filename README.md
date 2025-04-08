@@ -15,7 +15,7 @@ The app is client-side only and has no server or external dependencies.
 
 ## Roadmap
 - [x] **Basic functionality**
-- [ ] **Import/export:** This is a high priority so we can give users a fighting chance to preserve their data on future updates.
+- [x] **Import/export:** This is a high priority so we can give users a fighting chance to preserve their data on future updates.
 - [ ] **Other currencies:** This app is shamefully dollar-centric. We should allow users to select their own currency.
 - [ ] **Offline functionality:** This app is embarassingly offlineable. We should set up a service worker to allow full offline use.
 - [ ] **Updates & data migrations:** Provide a way to smoothly upgrade users to later versions of the app, including preserving their data. 
