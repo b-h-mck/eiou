@@ -1,12 +1,12 @@
 ![eiou](public/eiou-wide.svg)
 
 eiou is a small React app to allow users to record IOUs/payments and check balances. For more info, on what it does and how to use it, 
-[see the in-app help page](https://eiou.azurewebsites.net/).
+[see the in-app help page](https://eiou-online.com/help).
 
-If you just want to see the app in action, [visit the "official" deployment here](https://eiou.azurewebsites.net/).
+If you just want to see the app in action, [visit the "official" deployment here](https://eiou-online.com).
 
 ## Running Locally
-1. Clone the repository: `git clone https://github.com/your-repo/eiou.git`
+1. Clone the repository: `git clone https://github.com/b-h-mck/eiou.git`
 2. Navigate to the project directory: `cd eiou`
 3. Install dependencies: `npm install`
 4. Start the development server: `npm run dev`
