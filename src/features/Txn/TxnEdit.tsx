@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { category, getTxnSummary, Txn, TxnEditableFields, TxnType } from './TxnModel';
+import { category, getTxnSummary, TxnEditableFields, TxnType } from './TxnModel';
 import './TxnEdit.css';
 
 interface TxnEditProps {
