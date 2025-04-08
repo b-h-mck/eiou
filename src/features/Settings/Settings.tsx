@@ -1,12 +1,29 @@
 import "./Settings.css";
-import { clearAllPeople, clearAllTxns } from "../../shared/store";
+import { clearAllPeople, clearAllTxns, getAllPeople, getAllTxns } from "../../shared/store";
 
 
 const Settings = () => {
 
     const exportData = async () => {
-        // Implement the export logic here
-        console.log("Exporting data...");
+        const people = await getAllPeople();
+        const txns = await getAllTxns();
+
+        const allData = {
+            people,
+            txns
+        }
+
+        const allDataString = JSON.stringify(allData, null, 2);
+
+        const blob = new Blob([allDataString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "eiou-data.json";
+        a.click();
+
+        URL.revokeObjectURL(url);
     }
 
     const importData = async () => {
