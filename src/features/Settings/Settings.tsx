@@ -1,10 +1,31 @@
 import { deleteDB, exportDB, importDB, parseExportedData } from "../../shared/store";
 import "./Settings.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Options } from "./OptionsModel";
+import { OptionsDB } from "../../shared/store";
 
 const Settings = () => {
     const [message, setMessage] = useState("");
     const [confirmImportDisabled, setConfirmImportDisabled] = useState(true);
+    const [options, setOptions] = useState<Options>({
+        prefix: "",
+        suffix: "",
+        decimalPlaces: 2,
+        omitDecimalForWhole: false,
+        defaultAmount: 20,
+        stepAmount: 1,
+        maxAmount: 100,
+    });
+
+    useEffect(() => {
+        const fetchOptions = async () => {
+            const storedOptions = await OptionsDB.get();
+            if (storedOptions) {
+                setOptions(storedOptions);
+            }
+        };
+        fetchOptions();
+    }, []);
 
     const showMessage = (msg: string) => {
         setMessage(msg);
@@ -56,6 +77,18 @@ const Settings = () => {
         }
     };
 
+    const handleOptionsChange = (field: keyof Options, value: string | number | boolean) => {
+        setOptions((prevOptions) => ({
+            ...prevOptions,
+            [field]: value,
+        }));
+    };
+
+    const handleOptionsSave = async () => {
+        await OptionsDB.put(options);
+        showMessage("Options saved successfully.");
+    };
+
     return (
         <>
         <section className="settings">
@@ -69,6 +102,72 @@ const Settings = () => {
             <button onClick={clearData} className="dangerous-button">
                 Clear All Data
             </button>
+            <div className="currency-options">
+                <h2>Currency Options</h2>
+                <label>
+                    Prefix:
+                    <input
+                        type="text"
+                        value={options.prefix}
+                        onChange={(e) => handleOptionsChange("prefix", e.target.value)}
+                        maxLength={10}
+                        pattern="^[^<>]*$"
+                    />
+                </label>
+                <label>
+                    Suffix:
+                    <input
+                        type="text"
+                        value={options.suffix}
+                        onChange={(e) => handleOptionsChange("suffix", e.target.value)}
+                        maxLength={10}
+                        pattern="^[^<>]*$"
+                    />
+                </label>
+                <label>
+                    Decimal Places:
+                    <input
+                        type="number"
+                        value={options.decimalPlaces}
+                        onChange={(e) => handleOptionsChange("decimalPlaces", parseInt(e.target.value))}
+                    />
+                </label>
+                <label>
+                    Omit Decimal for Whole Numbers:
+                    <input
+                        type="checkbox"
+                        checked={options.omitDecimalForWhole}
+                        onChange={(e) => handleOptionsChange("omitDecimalForWhole", e.target.checked)}
+                    />
+                </label>
+                <label>
+                    Default Amount:
+                    <input
+                        type="number"
+                        value={options.defaultAmount}
+                        onChange={(e) => handleOptionsChange("defaultAmount", parseFloat(e.target.value))}
+                    />
+                </label>
+                <label>
+                    Step Amount:
+                    <input
+                        type="number"
+                        value={options.stepAmount}
+                        onChange={(e) => handleOptionsChange("stepAmount", parseFloat(e.target.value))}
+                    />
+                </label>
+                <label>
+                    Max Amount:
+                    <input
+                        type="number"
+                        value={options.maxAmount}
+                        onChange={(e) => handleOptionsChange("maxAmount", parseFloat(e.target.value))}
+                    />
+                </label>
+                <button onClick={handleOptionsSave} className="safe-button">
+                    Save Options
+                </button>
+            </div>
             <p className="message">{message ?? "&nbsp;"}</p>
         </section>
         <dialog id="import-data-dialog">
@@ -95,4 +194,3 @@ const Settings = () => {
 };
 
 export default Settings;
-

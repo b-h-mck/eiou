@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { TxnEditableFields, Txn, TxnCalculationsByPersonId, calculateTxns, TxnType } from "../Txn/TxnModel";
 import { calculatePeople, Person, PersonCalculations, PersonEditableFields } from "../Person/PersonModel";
-import { PeopleDB, TxnsDB } from "../../shared/store";
+import { PeopleDB, TxnsDB, OptionsDB } from "../../shared/store";
 import HomeUi from "./HomeUi";
 import { Mode } from "./ModeSelector";
+import { Options, defaultOptions, formatCurrency } from "../Settings/OptionsModel";
 
 const Home = () => {
 
@@ -35,7 +36,9 @@ const Home = () => {
     // All the transactions available in the transaction panel, grouped by person ID
     const [txnsByPersonId, setTxnsByPersonId] = useState<TxnCalculationsByPersonId>({});
 
-    
+    // User-defined currency options
+    const [options, setOptions] = useState<Options>(defaultOptions);
+
     // Calculate the selected person and transaction type.
     const selectedPerson = useMemo(() => {
         return people.find((person) => person.id === selectedPersonId) || null;
@@ -71,10 +74,12 @@ const Home = () => {
     const loadData = async () => {
         const storedPeople = await PeopleDB.getAll();
         const storedTxns = await TxnsDB.getAll();
+        const storedOptions = await OptionsDB.get();
         const calculatedTxns = calculateTxns(storedTxns);
         const calculatedPeople = calculatePeople(storedPeople, calculatedTxns);
         setPeople(calculatedPeople);
         setTxnsByPersonId(calculatedTxns);
+        setOptions(storedOptions);
     };
 
 
@@ -140,7 +145,10 @@ const Home = () => {
                 fullAmount: Math.abs(selectedPerson.closingBalance),
             });
         } else {
-            setNewTxn(emptyTxn);
+            setNewTxn({
+                ...emptyTxn,
+                fullAmount: options.defaultAmount,
+            });
         }
     };
 

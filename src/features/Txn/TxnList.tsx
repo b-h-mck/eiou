@@ -1,8 +1,10 @@
 import { getTxnSummary, TxnCalculations, TxnEditableFields } from "./TxnModel";
 import "./TxnList.css";
 import { getBalanceString } from "../Person/PersonModel";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import TxnEdit from "./TxnEdit";
+import { Options, formatCurrency } from "../Settings/OptionsModel";
+import { OptionsDB } from "../../shared/store";
 
 interface TxnListProps {
     txns: TxnCalculations[];
@@ -17,6 +19,25 @@ interface TxnListProps {
 }
 
 const TxnList: React.FC<TxnListProps> = (props) => {
+    const [options, setOptions] = useState<Options>({
+        prefix: "",
+        suffix: "",
+        decimalPlaces: 2,
+        omitDecimalForWhole: false,
+        defaultAmount: 20,
+        stepAmount: 1,
+        maxAmount: 100,
+    });
+
+    useEffect(() => {
+        const fetchOptions = async () => {
+            const storedOptions = await OptionsDB.get();
+            if (storedOptions) {
+                setOptions(storedOptions);
+            }
+        };
+        fetchOptions();
+    }, []);
 
     if (props.txns.length === 0) {
         return <div className="txn-list">No transactions found</div>;
@@ -28,9 +49,9 @@ const TxnList: React.FC<TxnListProps> = (props) => {
             "Description": getTxnSummary(txn),
             "Balance Before": getBalanceString(txn.personName ?? "Someone", txn.balanceBefore),
             "Balance After": getBalanceString(txn.personName ?? "Someone", txn.balanceAfter),
+            "Amount": formatCurrency(txn.finalAmount ?? 0, options),
         }
     }));
-
 
     const handleRowClick = (id: string) => {
         if (props.selectedTxnId === id) {

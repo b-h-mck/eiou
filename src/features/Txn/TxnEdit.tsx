@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { category, getTxnSummary, TxnEditableFields, TxnType } from './TxnModel';
 import './TxnEdit.css';
+import { OptionsDB } from '../../shared/store';
+import { formatCurrency, Options } from '../Settings/OptionsModel';
 
 interface TxnEditProps {
     personName?: string;
@@ -15,10 +17,28 @@ interface TxnEditProps {
 
 const TxnEdit = (props: TxnEditProps) => {
 
-    // const [txn, setTxn] = useState<TxnEditableFields>(props.txn);
     const [unknownAmount, setUnknownAmount] = useState(category(props.type) == 'iou' && props.txn.fullAmount === null);
     const [splitWithMe, setSplitWithMe] = useState(props.txn.splitWithMe);
     const [previousAmount, setPreviousAmount] = useState<number | null>(props.txn.fullAmount);
+    const [options, setOptions] = useState<Options>({
+        prefix: "",
+        suffix: "",
+        decimalPlaces: 2,
+        omitDecimalForWhole: false,
+        defaultAmount: 20,
+        stepAmount: 1,
+        maxAmount: 100,
+    });
+
+    useEffect(() => {
+        const fetchOptions = async () => {
+            const storedOptions = await OptionsDB.get();
+            if (storedOptions) {
+                setOptions(storedOptions);
+            }
+        };
+        fetchOptions();
+    }, []);
 
     const handleChange = (field: keyof TxnEditableFields, value: string | number | boolean | null) => {
         const updatedTxn = { ...props.txn, [field]: value };
@@ -44,15 +64,13 @@ const TxnEdit = (props: TxnEditProps) => {
         handleChange('splitWithMe', checked);
     };
 
-
-    //const activeTxn : Txn = { ...props.txn, id: '0', personName: props.personName, type: props.type };
     let isSaveDisabled = !unknownAmount && (props.txn.fullAmount === null || props.txn.fullAmount === undefined);
     isSaveDisabled = isSaveDisabled || !props.personName;
 
     let title: string = '';
     let subtitle: string = '';
     let showForm: boolean = true;
-    let maxSliderAmount: number = 100;
+    let maxSliderAmount: number = options.maxAmount;
     if (category(props.type) == 'pay') {
         if (props.isEditingExistingTxn) {
             title = props.type === 'iPaid' ? `I paid ${props.personName}` : `${props.personName} paid me`;
@@ -68,12 +86,12 @@ const TxnEdit = (props: TxnEditProps) => {
             showForm = false;
         }
         else if (props.type === 'iPaid') {
-            title = `I currently owe ${props.personName} $${-props.currentBalance}`;
+            title = `I currently owe ${props.personName} ${formatCurrency(-props.currentBalance, options)}`;
             subtitle = 'How much of this am I paying off?';
             maxSliderAmount = -props.currentBalance;
         }
         else if (props.type === 'theyPaid') {
-            title = `${props.personName} currently owes me $${props.currentBalance}`;
+            title = `${props.personName} currently owes me ${formatCurrency(props.currentBalance, options)}`;
             subtitle = 'How much of this are they paying off?';
             maxSliderAmount = props.currentBalance;
         }
@@ -81,7 +99,6 @@ const TxnEdit = (props: TxnEditProps) => {
     else {
         title = props.type === 'iOwe' ? `I owe ${props.personName}` : `${props.personName} owes me`;
     }
-
 
     return (
         <div className="txn-edit">
@@ -130,17 +147,17 @@ const TxnEdit = (props: TxnEditProps) => {
                         disabled={unknownAmount && category(props.type) == 'iou'}
                     />
                     <div className="slider-container">
-                        <span>{0}</span>
+                        <span>{formatCurrency(0, options)}</span>
                         <input
                             type="range"
                             min={0}
                             max={maxSliderAmount}
-                            step={1}
+                            step={options.stepAmount}
                             value={props.txn.fullAmount ?? 0}
                             onChange={(e) => handleChange('fullAmount', parseFloat(e.target.value))}
                             disabled={unknownAmount && category(props.type) == 'iou'}
                         />
-                        <span>{maxSliderAmount}</span>
+                        <span>{formatCurrency(maxSliderAmount, options)}</span>
                     </div>
                 </label>
                 <label>

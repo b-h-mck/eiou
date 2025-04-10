@@ -67,7 +67,7 @@ export function getTxnSummary(txn: Txn): string {
     }
     else if (txn.fullAmount) {
         const amount = txn.splitWithMe ? (txn.fullAmount || 0) / 2 : txn.fullAmount || 0;
-        txnString += amount ? ` $${amount}` : '';
+        txnString += amount ? ` ${formatCurrency(amount, options)}` : '';
     }
 
 
@@ -101,23 +101,3 @@ export function calculateTxns(txns: Txn[]): TxnCalculationsByPersonId {
     }
     return result;
 }
-// export function getTxnBalances(txns: Txn[], openingBalance: number): TxnWithBalances[] {
-//     txns = txns.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-//     const txnsWithBalances: TxnWithBalances[] = [];
-//     let currentBalance = openingBalance;
-//     for (const txn of txns) {
-//         const txnWithBalance: TxnWithBalances = {
-//             ...txn,
-//             balanceBefore: currentBalance,
-//             balanceAfter: currentBalance,
-//         };
-//         if (txn.direction === 'in') {
-//             currentBalance += txn.fullAmount || 0;
-//         } else {
-//             currentBalance -= txn.fullAmount || 0;
-//         }
-//         txnWithBalance.balanceAfter = currentBalance;
-//         txnsWithBalances.push(txnWithBalance);
-//     }
-//     return txnsWithBalances;
-// }
