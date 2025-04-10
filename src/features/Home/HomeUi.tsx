@@ -112,6 +112,7 @@ const HomeUi = (props: HomeUiProps) => {
                             console.log("Transaction canceled");
                             props.onSelectMode(null);
                         }}
+                        deleteVisible={false}
                     />
                 </section>
             )}

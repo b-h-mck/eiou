@@ -12,6 +12,8 @@ interface TxnEditProps {
     onChange: (txn: TxnEditableFields) => void;
     onSave: (txn: TxnEditableFields) => void;
     onCancel: () => void;
+    onDelete?: () => void;
+    deleteVisible?: boolean;
 }
 
 const TxnEdit = (props: TxnEditProps) => {
@@ -148,13 +150,23 @@ const TxnEdit = (props: TxnEditProps) => {
                     <button type="button" onClick={handleSave} disabled={isSaveDisabled}>
                         Save
                     </button>
-                    <button type="button" onClick={props.onCancel}>
+                    <button type="button" className="cancel-button" onClick={props.onCancel}>
                         Cancel
                     </button>
+                    {props.deleteVisible && (
+                        <button type="button" className="delete-button" onClick={props.onDelete}>
+                            Delete
+                        </button>
+                    )}
                 </div>
             </form>}
         </div>
     );
+};
+
+TxnEdit.defaultProps = {
+    onDelete: () => {},
+    deleteVisible: false,
 };
 
 export default TxnEdit;

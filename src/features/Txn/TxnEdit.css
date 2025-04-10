@@ -100,13 +100,30 @@
     background-color: #d32f2f;
 }
 
-
 .txn-edit-buttons button:disabled {
     background-color: #cccccc; 
     color: #666666; 
     cursor: not-allowed; 
     opacity: 0.6; 
     pointer-events: none; 
+}
+
+.txn-edit-buttons .delete-button {
+    background-color: red;
+    color: white;
+}
+
+.txn-edit-buttons .delete-button:hover {
+    background-color: darkred;
+}
+
+.txn-edit-buttons .cancel-button {
+    background-color: #cccccc;
+    color: #666666;
+}
+
+.txn-edit-buttons .cancel-button:hover {
+    background-color: #999999;
 }
 
 .slider-container {

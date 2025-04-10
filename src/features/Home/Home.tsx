@@ -80,12 +80,6 @@ const Home = () => {
         setTxnsByPersonId(calculatedTxns);
     };
 
-
-    // Load the data on page load
-    useEffect(() => {
-        loadData();
-    }, []);
-
     // Add a person to IndexedDB and reload data
     const addPerson = async (personEditableFields: PersonEditableFields) => {
         const person : Person = {
@@ -127,6 +121,13 @@ const Home = () => {
             await loadData();
             setNewTxn(emptyTxn);
         }
+    }
+
+    // Delete a transaction from IndexedDB and reload data
+    const deleteTxn = async (id: string) => {
+        await TxnsDB.delete(id);
+        await loadData();
+        setSelectedTxnId(null);
     }
 
     const scrollToElement = (element: HTMLElement | null) => {
@@ -204,6 +205,7 @@ const Home = () => {
         onAddPersonSave={addPerson}
         onAddTxnSave={addTxn}
         onUpdateTxnSave={updateTxn}
+        onDeleteTxn={deleteTxn}
     />;
 };
 

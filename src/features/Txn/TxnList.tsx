@@ -1,9 +1,10 @@
 import { getTxnSummary, TxnCalculations, TxnEditableFields } from "./TxnModel";
 import "./TxnList.css";
 import { getBalanceString } from "../Person/PersonModel";
-import { Fragment  } from "react";
+import { Fragment, useState } from "react";
 import TxnEdit from "./TxnEdit";
 import { formatCurrency, useOptions } from "../Settings/OptionsModel";
+import { TxnsDB } from "../../shared/store";
 
 interface TxnListProps {
     txns: TxnCalculations[];
@@ -19,11 +20,12 @@ interface TxnListProps {
 
 const TxnList: React.FC<TxnListProps> = (props) => {
     const options = useOptions();
+    const [txns, setTxns] = useState<TxnCalculations[]>(props.txns);
 
-    if (props.txns.length === 0) {
+    if (txns.length === 0) {
         return <div className="txn-list">No transactions found</div>;
     }
-    var txnColumns = props.txns.map((txn) => ({
+    var txnColumns = txns.map((txn) => ({
         txn: txn,
         columns: {
             "Date": new Date(txn.date).toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
@@ -53,6 +55,19 @@ const TxnList: React.FC<TxnListProps> = (props) => {
         props.onSelectTxn(null); // Deselect on cancel
     };
 
+    const handleDelete = async () => {
+        if (props.selectedTxnId) {
+            await TxnsDB.delete(props.selectedTxnId);
+            await loadData();
+            props.onSelectTxn(null); // Deselect after deletion
+        }
+    };
+
+    const loadData = async () => {
+        const storedTxns = await TxnsDB.getAll();
+        setTxns(storedTxns);
+    };
+
     return (
         <div className="txn-list">
             {/* Table layout for wide screens */}
@@ -76,7 +91,8 @@ const TxnList: React.FC<TxnListProps> = (props) => {
                                 <tr className="txn-edit-row">
                                     <td colSpan={Object.keys(row.columns).length}>
                                         <TxnEdit txn={props.editingTxn} personName={row.txn.personName} type={row.txn.type} 
-                                        onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} />
+                                        onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} 
+                                        deleteVisible={true} onDelete={handleDelete} />
                                     </td>
                                 </tr>
                             }
@@ -96,7 +112,8 @@ const TxnList: React.FC<TxnListProps> = (props) => {
                         </div>
                         {props.selectedTxnId === row.txn.id && props.editingTxn && (
                             <div className="txn-edit-card">
-                                <TxnEdit txn={props.editingTxn} personName={row.txn.personName} type={row.txn.type} onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} />
+                                <TxnEdit txn={props.editingTxn} personName={row.txn.personName} type={row.txn.type} onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} 
+                                deleteVisible={true} onDelete={handleDelete} />
                             </div>
                         )}
                     </Fragment>
