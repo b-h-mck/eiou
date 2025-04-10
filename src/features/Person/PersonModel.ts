@@ -31,15 +31,7 @@ export function calculatePeople(people: Person[], txnsByPersonId: TxnCalculation
 }
 
 export async function getBalanceString(personName: string, balance: number | null): Promise<string> {
-    const options = await OptionsDB.get() || {
-        prefix: "",
-        suffix: "",
-        decimalPlaces: 2,
-        omitDecimalForWhole: false,
-        defaultAmount: 20,
-        stepAmount: 1,
-        maxAmount: 100,
-    };
+    const options = await OptionsDB.get();
 
     if (balance === null) {
         return 'Balance is unknown';

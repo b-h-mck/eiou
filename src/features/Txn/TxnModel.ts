@@ -1,3 +1,6 @@
+import { formatCurrency } from "../Settings/OptionsModel";
+import { OptionsDB } from "../../shared/store";
+
 export type TxnType = 'iOwe' | 'theyOwe' | 'iPaid' | 'theyPaid'
 export function category(type: TxnType) : 'iou' | 'pay' {
     switch (type) {
@@ -50,8 +53,9 @@ export type TxnCalculations = Txn & {
 export type TxnCalculationsByPersonId = Record<string, TxnCalculations[]>;
 
 
-export function getTxnSummary(txn: Txn): string {
+export async function getTxnSummary(txn: Txn): Promise<string> {
     const personName = txn.personName || 'Someone';
+    const options = await OptionsDB.get();
     let txnString = '';
     if (txn.type === 'iOwe') txnString += `I owe ${personName}`
     else if (txn.type === 'theyOwe') txnString += `${personName} owes me`;
