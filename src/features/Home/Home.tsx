@@ -126,6 +126,11 @@ const Home = () => {
         }
     }
 
+    const scrollToElement = (element: HTMLElement | null) => {
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     const setDefaultNewTxn = (mode: Mode | null, personId: string | null) => {
         const selectedPerson = people.find((person) => person.id === personId) || null;
@@ -142,11 +147,19 @@ const Home = () => {
     const selectMode = async (mode: Mode | null) => {
         setSelectedMode(mode);
         setDefaultNewTxn(mode, selectedPersonId);
+        if (!selectedPersonId && mode) {
+            scrollToElement(document.querySelector('.people'));
+        } else if (selectedPersonId && mode !== 'viewBalances') {
+            scrollToElement(document.querySelector('.newTxnDetails'));
+        }
     }
 
     const selectPerson = async (id: string | null) => {
         setSelectedPersonId(id);
         setDefaultNewTxn(selectedMode, id);
+        if (selectedMode && id) {
+            scrollToElement(document.querySelector('.newTxnDetails'));
+        }
     }
 
     const selectTxn = async (id: string | null) => {
@@ -160,11 +173,6 @@ const Home = () => {
             setEditingTxn(emptyTxn);
         }
     };
-
-
-
-
-
 
     return <HomeUi
         people={people}
@@ -191,10 +199,6 @@ const Home = () => {
         onAddTxnSave={addTxn}
         onUpdateTxnSave={updateTxn}
     />;
-
-
-
-    
 };
 
 export default Home;

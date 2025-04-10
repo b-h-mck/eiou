@@ -90,3 +90,8 @@ section {
 .clear-button:hover {
     background-color: #d32f2f;
 }
+
+/* Smooth scrolling behavior */
+html {
+    scroll-behavior: smooth;
+}
