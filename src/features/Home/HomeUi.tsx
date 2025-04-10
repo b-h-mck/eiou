@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import PersonCards from "../Person/PersonCards";
 import { PersonCalculations, PersonEditableFields } from "../Person/PersonModel";
 import TxnEdit from "../Txn/TxnEdit";
@@ -63,7 +63,8 @@ const HomeUi = (props: HomeUiProps) => {
     const showPeople = props.selectedMode || props.selectedPersonId;
     const showTxnDetails = props.txnType && selectedPerson !== null;
 
-
+    const personSelectorRef = useRef<HTMLDivElement>(null);
+    const newTxnDetailsRef = useRef<HTMLDivElement>(null);
 
     return (
         <div className={`home ${showTxnDetails ? '' : 'no-newTxnDetails'}`}>
@@ -74,7 +75,7 @@ const HomeUi = (props: HomeUiProps) => {
                     onChange={props.onSelectMode}
                     selected={props.selectedMode} />
             </section>
-            <section className={`people ${showPeople ? '' : 'hidden'}`} onClick={handlePeoplePanelClick}>
+            <section className={`people ${showPeople ? '' : 'hidden'}`} onClick={handlePeoplePanelClick} ref={personSelectorRef}>
                 {props.selectedMode === 'iOwe' && (<h2>Who do I owe?</h2>)}
                 {props.selectedMode === 'theyOwe' && (<h2>Who owes me?</h2>)}
                 {props.selectedMode === 'multiOwe' && (<h3>Select everyone involved (besides yourself)</h3>)}
@@ -88,7 +89,7 @@ const HomeUi = (props: HomeUiProps) => {
                 />
             </section>
             {showTxnDetails && (
-                <section className="newTxnDetails">
+                <section className="newTxnDetails" ref={newTxnDetailsRef}>
                     <TxnEdit
                         type={props.txnType!}
                         personName={selectedPerson?.name}
