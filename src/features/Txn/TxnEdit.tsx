@@ -50,7 +50,6 @@ const TxnEdit = (props: TxnEditProps) => {
     isSaveDisabled = isSaveDisabled || !props.personName;
 
     let title: string = '';
-    let subtitle: string = '';
     let showForm: boolean = true;
     let maxSliderAmount: number = options.maxAmount;
     if (category(props.type) == 'pay') {
@@ -59,22 +58,18 @@ const TxnEdit = (props: TxnEditProps) => {
         }
         else if (props.currentBalance === 0) {
             title = `${props.personName} and I are currently square.`;
-            subtitle = `There is no debt to be repaid.`;
             showForm = false;
         }
         else if (props.currentBalance === undefined) {
             title = `${props.personName}'s balance is unknown.`;
-            subtitle = `Please update their transactions below.`;
             showForm = false;
         }
         else if (props.type === 'iPaid') {
             title = `I currently owe ${props.personName} ${formatCurrency(-props.currentBalance, options)}`;
-            subtitle = 'How much of this am I paying off?';
             maxSliderAmount = -props.currentBalance;
         }
         else if (props.type === 'theyPaid') {
             title = `${props.personName} currently owes me ${formatCurrency(props.currentBalance, options)}`;
-            subtitle = 'How much of this are they paying off?';
             maxSliderAmount = props.currentBalance;
         }
     }
@@ -85,20 +80,19 @@ const TxnEdit = (props: TxnEditProps) => {
     return (
         <div className="txn-edit">
             <h3>{title}</h3>
-            {subtitle && <h4>{subtitle}</h4>}
             {showForm && <form>
                 
-                <label>
+                {category(props.type) === 'iou' && <label>
                     Description:
                     <input
                         type="text"
                         value={props.txn.description}
                         onChange={(e) => handleChange('description', e.target.value)}
                     />
-                </label>
+                </label>}
                 <label className="full-amount-label">
                     <div className="full-amount-header">
-                        Full amount:
+                        {category(props.type) == 'iou' ? "Full amount:" : "Amount paid:"}
                         {category(props.type) == 'iou' && (
                             <div className="full-amount-options">
                                 <input
