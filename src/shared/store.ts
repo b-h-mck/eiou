@@ -47,9 +47,9 @@ const initDB = async (version : number = DB_VERSION) => {
                     for (const person of oldPersons) {
                         nativeTransaction.objectStore(PEOPLE_STORE).add(person);
                     }
+                    db.deleteObjectStore("persons"); 
                 };
 
-                db.deleteObjectStore("persons");
             }
         },
     });
