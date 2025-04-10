@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { OptionsDB } from "../../shared/store";
+
 export type Options = {
   prefix: string;
   suffix: string;
@@ -6,16 +9,6 @@ export type Options = {
   defaultAmount: number;
   stepAmount: number;
   maxAmount: number;
-};
-
-export const defaultOptions: Options = {
-  prefix: "",
-  suffix: "",
-  decimalPlaces: 2,
-  omitDecimalForWhole: false,
-  defaultAmount: 20,
-  stepAmount: 1,
-  maxAmount: 100,
 };
 
 export function formatCurrency(amount: number, options: Options): string {
@@ -29,3 +22,19 @@ export function formatCurrency(amount: number, options: Options): string {
 
   return `${prefix}${formattedAmount}${suffix}`;
 }
+
+export const useOptions = () => {
+  const [options, setOptions] = useState<Options>({prefix: "", suffix: "", decimalPlaces: 0, omitDecimalForWhole: false, defaultAmount: 0, stepAmount: 0, maxAmount: 0});
+
+  useEffect(() => {
+      console.log("Fetching options from DB....");
+      const fetchOptions = async () => {
+          const fetchedOptions = await OptionsDB.get();
+          console.log("Options fetched from DB.", fetchedOptions);
+          setOptions(fetchedOptions);
+      };
+      fetchOptions();
+  }, []);
+
+  return options;
+};

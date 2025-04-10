@@ -1,11 +1,9 @@
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef } from "react";
 import PersonCards from "../Person/PersonCards";
 import { PersonCalculations, PersonEditableFields } from "../Person/PersonModel";
 import TxnEdit from "../Txn/TxnEdit";
 import TxnList from "../Txn/TxnList";
 import { Txn, TxnCalculationsByPersonId, TxnEditableFields, TxnType } from "../Txn/TxnModel";
-import { OptionsDB } from "../../shared/store";
-import { Options, formatCurrency } from "../Settings/OptionsModel";
 
 export interface HomeUiProps {
     people: PersonCalculations[];
@@ -67,26 +65,6 @@ const HomeUi = (props: HomeUiProps) => {
 
     const personSelectorRef = useRef<HTMLDivElement>(null);
     const newTxnDetailsRef = useRef<HTMLDivElement>(null);
-
-    const [options, setOptions] = useState<Options>({
-        prefix: "",
-        suffix: "",
-        decimalPlaces: 2,
-        omitDecimalForWhole: false,
-        defaultAmount: 20,
-        stepAmount: 1,
-        maxAmount: 100,
-    });
-
-    useEffect(() => {
-        const fetchOptions = async () => {
-            const storedOptions = await OptionsDB.get();
-            if (storedOptions) {
-                setOptions(storedOptions);
-            }
-        };
-        fetchOptions();
-    }, []);
 
     return (
         <div className={`home ${showTxnDetails ? '' : 'no-newTxnDetails'}`}>

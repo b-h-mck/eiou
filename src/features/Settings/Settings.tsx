@@ -1,31 +1,14 @@
 import { deleteDB, exportDB, importDB, parseExportedData } from "../../shared/store";
 import "./Settings.css";
-import { useState, useEffect } from "react";
-import { Options } from "./OptionsModel";
+import { useState } from "react";
+import { Options, useOptions } from "./OptionsModel";
 import { OptionsDB } from "../../shared/store";
 
 const Settings = () => {
     const [message, setMessage] = useState("");
     const [confirmImportDisabled, setConfirmImportDisabled] = useState(true);
-    const [options, setOptions] = useState<Options>({
-        prefix: "",
-        suffix: "",
-        decimalPlaces: 2,
-        omitDecimalForWhole: false,
-        defaultAmount: 20,
-        stepAmount: 1,
-        maxAmount: 100,
-    });
-
-    useEffect(() => {
-        const fetchOptions = async () => {
-            const storedOptions = await OptionsDB.get();
-            if (storedOptions) {
-                setOptions(storedOptions);
-            }
-        };
-        fetchOptions();
-    }, []);
+    const storedOptions = useOptions();
+    const [editingOptions, setEditingOptions] = useState<Options>(storedOptions);
 
     const showMessage = (msg: string) => {
         setMessage(msg);
@@ -78,14 +61,14 @@ const Settings = () => {
     };
 
     const handleOptionsChange = (field: keyof Options, value: string | number | boolean) => {
-        setOptions((prevOptions) => ({
+        setEditingOptions((prevOptions) => ({
             ...prevOptions,
             [field]: value,
         }));
     };
 
     const handleOptionsSave = async () => {
-        await OptionsDB.put(options);
+        await OptionsDB.put(editingOptions);
         showMessage("Options saved successfully.");
     };
 
@@ -108,7 +91,7 @@ const Settings = () => {
                     Prefix:
                     <input
                         type="text"
-                        value={options.prefix}
+                        value={editingOptions.prefix}
                         onChange={(e) => handleOptionsChange("prefix", e.target.value)}
                         maxLength={10}
                         pattern="^[^<>]*$"
@@ -118,7 +101,7 @@ const Settings = () => {
                     Suffix:
                     <input
                         type="text"
-                        value={options.suffix}
+                        value={editingOptions.suffix}
                         onChange={(e) => handleOptionsChange("suffix", e.target.value)}
                         maxLength={10}
                         pattern="^[^<>]*$"
@@ -128,7 +111,7 @@ const Settings = () => {
                     Decimal Places:
                     <input
                         type="number"
-                        value={options.decimalPlaces}
+                        value={editingOptions.decimalPlaces}
                         onChange={(e) => handleOptionsChange("decimalPlaces", parseInt(e.target.value))}
                     />
                 </label>
@@ -136,7 +119,7 @@ const Settings = () => {
                     Omit Decimal for Whole Numbers:
                     <input
                         type="checkbox"
-                        checked={options.omitDecimalForWhole}
+                        checked={editingOptions.omitDecimalForWhole}
                         onChange={(e) => handleOptionsChange("omitDecimalForWhole", e.target.checked)}
                     />
                 </label>
@@ -144,7 +127,7 @@ const Settings = () => {
                     Default Amount:
                     <input
                         type="number"
-                        value={options.defaultAmount}
+                        value={editingOptions.defaultAmount}
                         onChange={(e) => handleOptionsChange("defaultAmount", parseFloat(e.target.value))}
                     />
                 </label>
@@ -152,7 +135,7 @@ const Settings = () => {
                     Step Amount:
                     <input
                         type="number"
-                        value={options.stepAmount}
+                        value={editingOptions.stepAmount}
                         onChange={(e) => handleOptionsChange("stepAmount", parseFloat(e.target.value))}
                     />
                 </label>
@@ -160,7 +143,7 @@ const Settings = () => {
                     Max Amount:
                     <input
                         type="number"
-                        value={options.maxAmount}
+                        value={editingOptions.maxAmount}
                         onChange={(e) => handleOptionsChange("maxAmount", parseFloat(e.target.value))}
                     />
                 </label>

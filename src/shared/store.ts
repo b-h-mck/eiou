@@ -1,7 +1,7 @@
 import { openDB, unwrap } from "idb";
 import { Person } from "../features/Person/PersonModel";
 import { Txn } from "../features/Txn/TxnModel";
-import { Options, defaultOptions } from "../features/Settings/OptionsModel";
+import { Options } from "../features/Settings/OptionsModel";
 
 const DB_NAME = "eiouDB";
 const DB_VERSION = 2; // Increment this when you change the database schema, and add a migration below.
@@ -13,7 +13,16 @@ const OPTIONS_STORE = "options";
 // These accessors provide access to the database stores to other parts of the app.
 export const PeopleDB = createIdObjectAccessor<Person>(PEOPLE_STORE);
 export const TxnsDB = createIdObjectAccessor<Txn>(TXNS_STORE);
-export const OptionsDB = createSingletonObjectAccessor<Options>(OPTIONS_STORE, defaultOptions);
+export const OptionsDB = createSingletonObjectAccessor<Options>(OPTIONS_STORE, 
+{
+    prefix: "$",
+    suffix: "",
+    decimalPlaces: 2,
+    omitDecimalForWhole: false,
+    defaultAmount: 20,
+    stepAmount: 1,
+    maxAmount: 100,
+});
 
 
 const initDB = async (version : number = DB_VERSION) => {

@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { category, getTxnSummary, TxnEditableFields, TxnType } from './TxnModel';
 import './TxnEdit.css';
-import { OptionsDB } from '../../shared/store';
-import { formatCurrency, Options } from '../Settings/OptionsModel';
+import { formatCurrency, useOptions } from '../Settings/OptionsModel';
 
 interface TxnEditProps {
     personName?: string;
@@ -20,25 +19,8 @@ const TxnEdit = (props: TxnEditProps) => {
     const [unknownAmount, setUnknownAmount] = useState(category(props.type) == 'iou' && props.txn.fullAmount === null);
     const [splitWithMe, setSplitWithMe] = useState(props.txn.splitWithMe);
     const [previousAmount, setPreviousAmount] = useState<number | null>(props.txn.fullAmount);
-    const [options, setOptions] = useState<Options>({
-        prefix: "",
-        suffix: "",
-        decimalPlaces: 2,
-        omitDecimalForWhole: false,
-        defaultAmount: 20,
-        stepAmount: 1,
-        maxAmount: 100,
-    });
-
-    useEffect(() => {
-        const fetchOptions = async () => {
-            const storedOptions = await OptionsDB.get();
-            if (storedOptions) {
-                setOptions(storedOptions);
-            }
-        };
-        fetchOptions();
-    }, []);
+    
+    const options = useOptions()
 
     const handleChange = (field: keyof TxnEditableFields, value: string | number | boolean | null) => {
         const updatedTxn = { ...props.txn, [field]: value };
@@ -167,7 +149,7 @@ const TxnEdit = (props: TxnEditProps) => {
                         onChange={(e) => handleChange('notes', e.target.value)}
                     />
                 </label>
-                <p>{getTxnSummary({...props.txn, id: '0', type: props.type, personName: props.personName})}</p>
+                <p>{getTxnSummary({...props.txn, id: '0', type: props.type, personName: props.personName}, options)}</p>
                 <div className="txn-edit-buttons">
                     <button type="button" onClick={handleSave} disabled={isSaveDisabled}>
                         Save

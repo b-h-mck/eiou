@@ -1,5 +1,4 @@
 import { TxnCalculationsByPersonId } from "../Txn/TxnModel";
-import { OptionsDB } from "../../shared/store";
 import { formatCurrency, Options } from "../Settings/OptionsModel";
 
 export type PersonEditableFields = {
@@ -30,8 +29,7 @@ export function calculatePeople(people: Person[], txnsByPersonId: TxnCalculation
     return calculatedPeople;
 }
 
-export async function getBalanceString(personName: string, balance: number | null): Promise<string> {
-    const options = await OptionsDB.get();
+export function getBalanceString(personName: string, balance: number | null, options : Options): string {
 
     if (balance === null) {
         return 'Balance is unknown';

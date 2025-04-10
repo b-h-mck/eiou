@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './PersonCards.css';
 import { getBalanceString, Person, PersonCalculations, PersonEditableFields } from './PersonModel';
+import { useOptions } from '../Settings/OptionsModel';
 
 interface PersonCardsProps {
     people: PersonCalculations[];
@@ -103,11 +104,12 @@ const PersonCard: React.FC<PersonCardProps> = ({ person, onCardClick, isSelected
         event.stopPropagation(); // Prevent event bubbling to parent li
         onCardClick();
     }
+    const options = useOptions();
     return (
         <li className={`card ${isSelected ? 'selected' : ''}`} onClick={onListItemClick}>
             <h4>{person.name}</h4>
             <p>
-                {getBalanceString(person.name, person.closingBalance)}
+                {getBalanceString(person.name, person.closingBalance, options)}
             </p>
         </li>
     );
