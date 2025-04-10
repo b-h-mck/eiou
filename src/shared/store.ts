@@ -13,16 +13,7 @@ const OPTIONS_STORE = "options";
 // These accessors provide access to the database stores to other parts of the app.
 export const PeopleDB = createIdObjectAccessor<Person>(PEOPLE_STORE);
 export const TxnsDB = createIdObjectAccessor<Txn>(TXNS_STORE);
-export const OptionsDB = createSingletonObjectAccessor<Options>(OPTIONS_STORE, 
-{
-    prefix: "$",
-    suffix: "",
-    decimalPlaces: 2,
-    omitDecimalForWhole: false,
-    defaultAmount: 20,
-    stepAmount: 1,
-    maxAmount: 100,
-});
+export const OptionsDB = createSingletonObjectAccessor<Options>(OPTIONS_STORE);
 
 
 const initDB = async (version : number = DB_VERSION) => {
@@ -171,12 +162,12 @@ function createIdObjectAccessor<TObject>(storeName: string) {
 }
 
 
-function createSingletonObjectAccessor<TObject>(storeName: string, defaultValue: TObject) {
+function createSingletonObjectAccessor<TObject extends {} | null>(storeName: string) {
     return {
         get: async () => {
             const db = await initDB();
             const result = await (db.getAll(storeName) as Promise<TObject[]>);
-            return result.length > 0 ? result[0] : defaultValue;
+            return result.length > 0 ? result[0] : null;
         },
         put: async (object: TObject) => {
             const db = await initDB();

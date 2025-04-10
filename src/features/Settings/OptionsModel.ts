@@ -24,14 +24,27 @@ export function formatCurrency(amount: number, options: Options): string {
 }
 
 export const useOptions = () => {
-  const [options, setOptions] = useState<Options>({prefix: "", suffix: "", decimalPlaces: 0, omitDecimalForWhole: false, defaultAmount: 0, stepAmount: 0, maxAmount: 0});
+  const [options, setOptions] = useState<Options>({
+      prefix: "$",
+      suffix: "",
+      decimalPlaces: 2,
+      omitDecimalForWhole: true,
+      defaultAmount: 20,
+      stepAmount: 1,
+      maxAmount: 100,
+  });
 
   useEffect(() => {
       console.log("Fetching options from DB....");
       const fetchOptions = async () => {
           const fetchedOptions = await OptionsDB.get();
-          console.log("Options fetched from DB.", fetchedOptions);
-          setOptions(fetchedOptions);
+          if (fetchedOptions) {
+              console.log("Fetched options:", fetchedOptions);
+            setOptions(fetchedOptions);
+          }
+          else {
+              console.log("No options found in DB, using default options.");
+          }
       };
       fetchOptions();
   }, []);

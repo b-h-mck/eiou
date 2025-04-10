@@ -1,6 +1,6 @@
 import { deleteDB, exportDB, importDB, parseExportedData } from "../../shared/store";
 import "./Settings.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Options, useOptions } from "./OptionsModel";
 import { OptionsDB } from "../../shared/store";
 
@@ -9,6 +9,11 @@ const Settings = () => {
     const [confirmImportDisabled, setConfirmImportDisabled] = useState(true);
     const storedOptions = useOptions();
     const [editingOptions, setEditingOptions] = useState<Options>(storedOptions);
+
+    useEffect(() => {
+        setEditingOptions(storedOptions);
+    }
+    , [storedOptions]);
 
     const showMessage = (msg: string) => {
         setMessage(msg);
@@ -56,7 +61,8 @@ const Settings = () => {
     const clearData = async () => {
         const confirmed = window.confirm("Are you sure you want to clear all data? This action cannot be undone.");
         if (confirmed) {
-            await deleteDB()
+            await deleteDB();
+            showMessage("Database cleared successfully.");
         }
     };
 
@@ -74,18 +80,7 @@ const Settings = () => {
 
     return (
         <>
-        <section className="settings">
-            <h1>Settings</h1>
-            <button onClick={handleExport} className="safe-button">
-                Export Data
-            </button>
-            <button onClick={handleImport} className="dangerous-button">
-                Import Data
-            </button>
-            <button onClick={clearData} className="dangerous-button">
-                Clear All Data
-            </button>
-            <div className="currency-options">
+            <section className="settings currency-options">
                 <h2>Currency Options</h2>
                 <label>
                     Prefix:
@@ -115,13 +110,13 @@ const Settings = () => {
                         onChange={(e) => handleOptionsChange("decimalPlaces", parseInt(e.target.value))}
                     />
                 </label>
-                <label>
-                    Omit Decimal for Whole Numbers:
+                <label className="checkbox-label">
                     <input
                         type="checkbox"
                         checked={editingOptions.omitDecimalForWhole}
                         onChange={(e) => handleOptionsChange("omitDecimalForWhole", e.target.checked)}
                     />
+                    Omit Decimal for Whole Numbers
                 </label>
                 <label>
                     Default Amount:
@@ -147,31 +142,35 @@ const Settings = () => {
                         onChange={(e) => handleOptionsChange("maxAmount", parseFloat(e.target.value))}
                     />
                 </label>
-                <button onClick={handleOptionsSave} className="safe-button">
-                    Save Options
-                </button>
-            </div>
-            <p className="message">{message ?? "&nbsp;"}</p>
-        </section>
-        <dialog id="import-data-dialog">
-            <div>
-                <h2>Import Data</h2>
-                <p className="warning">Warning: Importing data will overwrite all existing data!</p>
-                <input
-                    className="file-input"
-                    type="file"
-                    accept=".json"
-                    onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        setConfirmImportDisabled(!file);
-                    }}
-                />
-                <form method="dialog">
-                    <button className="dangerous-button" onClick={confirmImport} disabled={confirmImportDisabled}>Import<br/>(WILL OVERWRITE)</button>
-                    <button className="cancel-button">Cancel</button>
-                </form>
-            </div>
-        </dialog>
+                <button className="save-options-button" onClick={handleOptionsSave}>Save Options</button>
+                <p className="message">{message ?? "\u00A0"}</p>
+            </section>
+            <section className="settings db-management">
+                <h2>Database Management</h2>
+                <button onClick={handleExport}>Export Data</button>
+                <button className="dangerous-button" onClick={handleImport}>Import Data (WILL DELETE ALL RECORDS)</button>
+                <button className="dangerous-button" onClick={clearData}>Delete Database (WILL DELETE ALL RECORDS)</button>
+                <p className="message">{message ?? "\u00A0"}</p>
+            </section>
+            <dialog id="import-data-dialog">
+                <div>
+                    <h2>Import Data</h2>
+                    <p className="warning">Warning: Importing data will overwrite all existing data!</p>
+                    <input
+                        className="file-input"
+                        type="file"
+                        accept=".json"
+                        onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            setConfirmImportDisabled(!file);
+                        }}
+                    />
+                    <form method="dialog">
+                        <button onClick={confirmImport} disabled={confirmImportDisabled}>Import<br />(WILL OVERWRITE)</button>
+                        <button className="cancel-button">Cancel</button>
+                    </form>
+                </div>
+            </dialog>
         </>
     );
 };
