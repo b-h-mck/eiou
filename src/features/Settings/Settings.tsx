@@ -1,23 +1,29 @@
 import { deleteDB, exportDB, importDB, parseExportedData } from "../../shared/store";
 import "./Settings.css";
 import { useEffect, useState } from "react";
-import { Options, useOptions } from "./OptionsModel";
+import { defaultOptions, Options } from "./OptionsModel";
 import { OptionsDB } from "../../shared/store";
 
 const Settings = () => {
     const [message, setMessage] = useState("");
+    const [isMessageVisible, setIsMessageVisible] = useState(false);
     const [confirmImportDisabled, setConfirmImportDisabled] = useState(true);
-    const storedOptions = useOptions();
-    const [editingOptions, setEditingOptions] = useState<Options>(storedOptions);
+    const [editingOptions, setEditingOptions] = useState<Options | null>(null);
+
+    const fetchOptions = async () => {
+        const options = await OptionsDB.get();
+        setEditingOptions(options || defaultOptions);
+    };
 
     useEffect(() => {
-        setEditingOptions(storedOptions);
-    }
-    , [storedOptions]);
+        fetchOptions();
+    }, []);
 
     const showMessage = (msg: string) => {
         setMessage(msg);
-        setTimeout(() => setMessage(""), 5000); // Clear the message after 5 seconds
+        setIsMessageVisible(true); // Show the message immediately
+        setTimeout(() => setIsMessageVisible(false), 5000); // Start fade-out after 8 seconds
+        setTimeout(() => setMessage(""), 10000); // Fully remove the message after 10 seconds
     };
 
     const handleExport = async () => {
@@ -52,31 +58,41 @@ const Settings = () => {
                 const exportedDataObject = JSON.parse(e.target?.result as string);
                 const exportedData = parseExportedData(exportedDataObject);
                 await importDB(exportedData);
+                await fetchOptions(); // Refresh options after import
+                showMessage("Data imported successfully.");
             };
             reader.readAsText(file);
         }
         dialog.close();
     };
 
-    const clearData = async () => {
+    const handleDeleteDB = async () => {
         const confirmed = window.confirm("Are you sure you want to clear all data? This action cannot be undone.");
         if (confirmed) {
             await deleteDB();
+            await fetchOptions(); // Refresh options after delete
             showMessage("Database cleared successfully.");
         }
     };
 
     const handleOptionsChange = (field: keyof Options, value: string | number | boolean) => {
         setEditingOptions((prevOptions) => ({
-            ...prevOptions,
+            ...prevOptions!,
             [field]: value,
         }));
     };
 
     const handleOptionsSave = async () => {
-        await OptionsDB.put(editingOptions);
-        showMessage("Options saved successfully.");
+        if (editingOptions) {
+            await OptionsDB.put(editingOptions);
+            await fetchOptions(); // Refresh options after save
+            showMessage("Options saved successfully.");
+        }
     };
+
+    if (!editingOptions) {
+        return <div>Loading...</div>; // Show a loading state while options are being fetched
+    }
 
     return (
         <>
@@ -143,14 +159,14 @@ const Settings = () => {
                     />
                 </label>
                 <button className="save-options-button" onClick={handleOptionsSave}>Save Options</button>
-                <p className="message">{message ?? "\u00A0"}</p>
+                <p className={`message ${isMessageVisible ? "visible" : "fade-out"}`}>{message ?? "\u00A0"}</p>
             </section>
             <section className="settings db-management">
                 <h2>Database Management</h2>
                 <button onClick={handleExport}>Export Data</button>
-                <button className="dangerous-button" onClick={handleImport}>Import Data (WILL DELETE ALL RECORDS)</button>
-                <button className="dangerous-button" onClick={clearData}>Delete Database (WILL DELETE ALL RECORDS)</button>
-                <p className="message">{message ?? "\u00A0"}</p>
+                <button className="dangerous-button" onClick={handleImport}>Import Data (WILL OVERWRITE ALL RECORDS)</button>
+                <button className="dangerous-button" onClick={handleDeleteDB}>Delete Database (WILL DELETE ALL RECORDS)</button>
+                <p className={`message ${isMessageVisible ? "visible" : "fade-out"}`}>{message ?? "\u00A0"}</p>
             </section>
             <dialog id="import-data-dialog">
                 <div>
@@ -166,7 +182,7 @@ const Settings = () => {
                         }}
                     />
                     <form method="dialog">
-                        <button onClick={confirmImport} disabled={confirmImportDisabled}>Import<br />(WILL OVERWRITE)</button>
+                        <button className="dangerous-button" onClick={confirmImport} disabled={confirmImportDisabled}>Import<br />(WILL OVERWRITE)</button>
                         <button className="cancel-button">Cancel</button>
                     </form>
                 </div>

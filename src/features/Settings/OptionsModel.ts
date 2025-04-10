@@ -23,16 +23,18 @@ export function formatCurrency(amount: number, options: Options): string {
   return `${prefix}${formattedAmount}${suffix}`;
 }
 
+export const defaultOptions: Options = {
+  prefix: "$",
+  suffix: "",
+  decimalPlaces: 2,
+  omitDecimalForWhole: true,
+  defaultAmount: 20,
+  stepAmount: 1,
+  maxAmount: 100,
+};
+
 export const useOptions = () => {
-  const [options, setOptions] = useState<Options>({
-      prefix: "$",
-      suffix: "",
-      decimalPlaces: 2,
-      omitDecimalForWhole: true,
-      defaultAmount: 20,
-      stepAmount: 1,
-      maxAmount: 100,
-  });
+  const [options, setOptions] = useState<Options>(defaultOptions);
 
   useEffect(() => {
       console.log("Fetching options from DB....");
