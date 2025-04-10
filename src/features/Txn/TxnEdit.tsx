@@ -88,19 +88,37 @@ const TxnEdit = (props: TxnEditProps) => {
             <h3>{title}</h3>
             {subtitle && <h4>{subtitle}</h4>}
             {showForm && <form>
-                {category(props.type) == 'iou' && (
-                    <div className="checkbox-row">
-                        <input
-                            type="checkbox"
-                            id="unknownAmount"
-                            checked={unknownAmount}
-                            onChange={(e) => handleUnknownAmountChange(e.target.checked)}
-                        />
-                        <label htmlFor="unknownAmount">Unknown amount</label>
-                    </div>
-                )}
+                
                 <label>
-                    Full amount:
+                    Description:
+                    <input
+                        type="text"
+                        value={props.txn.description}
+                        onChange={(e) => handleChange('description', e.target.value)}
+                    />
+                </label>
+                <label className="full-amount-label">
+                    <div className="full-amount-header">
+                        Full amount:
+                        {category(props.type) == 'iou' && (
+                            <div className="full-amount-options">
+                                <input
+                                    type="checkbox"
+                                    id="unknownAmount"
+                                    checked={unknownAmount}
+                                    onChange={(e) => handleUnknownAmountChange(e.target.checked)}
+                                />
+                                <label htmlFor="unknownAmount">Unknown</label>
+                                <input
+                                    type="checkbox"
+                                    id="splitWithMe"
+                                    checked={splitWithMe}
+                                    onChange={(e) => handleSplitWithMeChange(e.target.checked)}
+                                />
+                                <label htmlFor="splitWithMe">Split</label>
+                            </div>
+                        )}
+                    </div>
                     <input
                         type="number"
                         value={
@@ -124,25 +142,6 @@ const TxnEdit = (props: TxnEditProps) => {
                         />
                         <span>{maxSliderAmount}</span>
                     </div>
-                </label>
-                {category(props.type) == 'iou' && (
-                    <div className="checkbox-row">
-                        <input
-                            type="checkbox"
-                            id="splitWithMe"
-                            checked={splitWithMe}
-                            onChange={(e) => handleSplitWithMeChange(e.target.checked)}
-                        />
-                        <label htmlFor="splitWithMe">Split with me</label>
-                    </div>
-                )}
-                <label>
-                    Description:
-                    <input
-                        type="text"
-                        value={props.txn.description}
-                        onChange={(e) => handleChange('description', e.target.value)}
-                    />
                 </label>
                 <label>
                     Notes:

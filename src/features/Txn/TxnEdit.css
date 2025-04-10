@@ -121,3 +121,41 @@
     min-width: 30px;
     text-align: center;
 }
+
+.full-amount-label {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.full-amount-options {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Align checkboxes to the right */
+    gap: 8px; /* Add spacing between checkboxes */
+    flex-grow: 1; /* Push the checkboxes to the right */
+}
+
+.full-amount-options label {
+    margin-right: 1em;
+}
+
+.full-amount-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space between "Full amount" and checkboxes */
+    gap: 16px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.full-amount-header input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.full-amount-header label {
+    font-size: 0.9rem;
+    color: #333;
+}

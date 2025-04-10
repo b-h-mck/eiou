@@ -1,13 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { TxnEditableFields, Txn, TxnCalculationsByPersonId, calculateTxns, TxnType } from "../Txn/TxnModel";
 import { calculatePeople, Person, PersonCalculations, PersonEditableFields } from "../Person/PersonModel";
-import {
-    getAllPeople,
-    addPersonToDB,
-    getAllTxns,
-    addTxnToDB,
-    putTxnInDB,
-} from "../../shared/store";
+import { PeopleDB, TxnsDB } from "../../shared/store";
 import HomeUi from "./HomeUi";
 import { Mode } from "./ModeSelector";
 
@@ -75,8 +69,8 @@ const Home = () => {
     // Load and calculate all data from the IndexedDB. This is called on page load, and also whenever the data is updated to refresh the local state
     // (not particularly efficient to fully reload every time, but we can fix it if and when we have performance issues)
     const loadData = async () => {
-        const storedPeople = await getAllPeople();
-        const storedTxns = await getAllTxns();
+        const storedPeople = await PeopleDB.getAll();
+        const storedTxns = await TxnsDB.getAll();
         const calculatedTxns = calculateTxns(storedTxns);
         const calculatedPeople = calculatePeople(storedPeople, calculatedTxns);
         setPeople(calculatedPeople);
@@ -95,7 +89,7 @@ const Home = () => {
             ...personEditableFields,
             id: crypto.randomUUID(),
         };
-        await addPersonToDB(person);
+        await PeopleDB.put(person);
         await loadData();
         setSelectedPersonId(person.id || null);
     };
@@ -113,7 +107,7 @@ const Home = () => {
 
         };
         if (txn.id) {
-            await addTxnToDB(txn);
+            await TxnsDB.put(txn);
             await loadData();
             setNewTxn(emptyTxn);
         }
@@ -126,7 +120,7 @@ const Home = () => {
             ...updatedTxn
         };
         if (txn.id) {
-            await putTxnInDB(txn);
+            await TxnsDB.put(txn);
             await loadData();
             setNewTxn(emptyTxn);
         }
@@ -173,20 +167,6 @@ const Home = () => {
 
 
     return <HomeUi
-        // people={people}
-        // txnsByPersonId={txnsByPersonId}
-        // newTxn={newTxn}
-        // editingTxn={editingTxn}
-        // onNewTxnChange={setNewTxn}
-        // onEditingTxnChange={setEditingTxn}
-        // selectedMode={selectedMode}
-        // txnType={txnType}
-        // selectedPersonId={selectedPersonId}
-        // onSelectMode={setSelectedMode}
-        // onSelectPerson={selectPerson}
-        // onAddPersonSave={addPerson}
-        // onAddTxn={addTxn}
-        // onUpdateTxn={updateTxn}
         people={people}
         txnsByPersonId={txnsByPersonId}
     
