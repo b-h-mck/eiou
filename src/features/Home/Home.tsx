@@ -4,6 +4,7 @@ import { calculatePeople, Person, PersonCalculations, PersonEditableFields } fro
 import { PeopleDB, TxnsDB } from "../../shared/store";
 import HomeUi from "./HomeUi";
 import { Mode } from "./ModeSelector";
+import { useOptions } from "../Settings/OptionsModel";
 
 const Home = () => {
 
@@ -35,7 +36,9 @@ const Home = () => {
     // All the transactions available in the transaction panel, grouped by person ID
     const [txnsByPersonId, setTxnsByPersonId] = useState<TxnCalculationsByPersonId>({});
 
-    
+    // User-defined currency options
+    const options = useOptions();
+
     // Calculate the selected person and transaction type.
     const selectedPerson = useMemo(() => {
         return people.find((person) => person.id === selectedPersonId) || null;
@@ -140,7 +143,10 @@ const Home = () => {
                 fullAmount: Math.abs(selectedPerson.closingBalance),
             });
         } else {
-            setNewTxn(emptyTxn);
+            setNewTxn({
+                ...emptyTxn,
+                fullAmount: options.defaultAmount,
+            });
         }
     };
 

@@ -1,3 +1,5 @@
+import { formatCurrency, Options } from "../Settings/OptionsModel";
+
 export type TxnType = 'iOwe' | 'theyOwe' | 'iPaid' | 'theyPaid'
 export function category(type: TxnType) : 'iou' | 'pay' {
     switch (type) {
@@ -50,7 +52,7 @@ export type TxnCalculations = Txn & {
 export type TxnCalculationsByPersonId = Record<string, TxnCalculations[]>;
 
 
-export function getTxnSummary(txn: Txn): string {
+export function getTxnSummary(txn: Txn, options: Options): string {
     const personName = txn.personName || 'Someone';
     let txnString = '';
     if (txn.type === 'iOwe') txnString += `I owe ${personName}`
@@ -67,7 +69,7 @@ export function getTxnSummary(txn: Txn): string {
     }
     else if (txn.fullAmount) {
         const amount = txn.splitWithMe ? (txn.fullAmount || 0) / 2 : txn.fullAmount || 0;
-        txnString += amount ? ` $${amount}` : '';
+        txnString += amount ? ` ${formatCurrency(amount, options)}` : '';
     }
 
 
@@ -101,23 +103,3 @@ export function calculateTxns(txns: Txn[]): TxnCalculationsByPersonId {
     }
     return result;
 }
-// export function getTxnBalances(txns: Txn[], openingBalance: number): TxnWithBalances[] {
-//     txns = txns.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-//     const txnsWithBalances: TxnWithBalances[] = [];
-//     let currentBalance = openingBalance;
-//     for (const txn of txns) {
-//         const txnWithBalance: TxnWithBalances = {
-//             ...txn,
-//             balanceBefore: currentBalance,
-//             balanceAfter: currentBalance,
-//         };
-//         if (txn.direction === 'in') {
-//             currentBalance += txn.fullAmount || 0;
-//         } else {
-//             currentBalance -= txn.fullAmount || 0;
-//         }
-//         txnWithBalance.balanceAfter = currentBalance;
-//         txnsWithBalances.push(txnWithBalance);
-//     }
-//     return txnsWithBalances;
-// }

@@ -1,4 +1,5 @@
 import { TxnCalculationsByPersonId } from "../Txn/TxnModel";
+import { formatCurrency, Options } from "../Settings/OptionsModel";
 
 export type PersonEditableFields = {
     name : string;
@@ -28,7 +29,8 @@ export function calculatePeople(people: Person[], txnsByPersonId: TxnCalculation
     return calculatedPeople;
 }
 
-export function getBalanceString(personName: string, balance: number | null): string {
+export function getBalanceString(personName: string, balance: number | null, options : Options): string {
+
     if (balance === null) {
         return 'Balance is unknown';
     }
@@ -37,7 +39,7 @@ export function getBalanceString(personName: string, balance: number | null): st
     }
     const absBalance = Math.abs(balance);
     if (balance > 0) {
-        return `${personName} owes $${absBalance}`;
+        return `${personName} owes ${formatCurrency(absBalance, options)}`;
     }
-    return `I owe $${absBalance}`;
+    return `I owe ${formatCurrency(absBalance, options)}`;
 }
