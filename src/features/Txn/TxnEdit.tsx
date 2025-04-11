@@ -147,7 +147,7 @@ const TxnEdit = (props: TxnEditProps) => {
                 </label>
                 <p>{getTxnSummary({...props.txn, id: '0', type: props.type, personName: props.personName}, options)}</p>
                 <div className="txn-edit-buttons">
-                    <button type="button" onClick={handleSave} disabled={isSaveDisabled}>
+                    <button type="button" className="save-button"  onClick={handleSave} disabled={isSaveDisabled}>
                         Save
                     </button>
                     <button type="button" className="cancel-button" onClick={props.onCancel}>

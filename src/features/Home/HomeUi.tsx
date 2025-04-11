@@ -23,6 +23,7 @@ export interface HomeUiProps {
 
     selectedTxnId: string | null;
     onSelectTxn: (txnId: string | null) => void;
+    onDeleteTxn: (txnId: string) => void;
 
     txnType: TxnType | null;
 
@@ -122,9 +123,11 @@ const HomeUi = (props: HomeUiProps) => {
                 <TxnList txns={recentTransactions}
                     selectedTxnId={props.selectedTxnId}
                     onSelectTxn={props.onSelectTxn}
+                    onDeleteTxn={props.onDeleteTxn}
                     editingTxn={props.editingTxn}
                     onEditingTxnChange={props.onEditingTxnChange}
                     onTxnSave={props.onUpdateTxnSave}
+                    onTxnDelete={props.onDeleteTxn}
                      />
             </section>
         </div>

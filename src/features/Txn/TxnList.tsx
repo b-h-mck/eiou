@@ -1,7 +1,7 @@
 import { getTxnSummary, TxnCalculations, TxnEditableFields } from "./TxnModel";
 import "./TxnList.css";
 import { getBalanceString } from "../Person/PersonModel";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import TxnEdit from "./TxnEdit";
 import { formatCurrency, useOptions } from "../Settings/OptionsModel";
 import { TxnsDB } from "../../shared/store";
@@ -11,21 +11,22 @@ interface TxnListProps {
 
     selectedTxnId: string | null;
     onSelectTxn: (txnId: string | null) => void;
+    onDeleteTxn: (txnId: string) => void;
 
     editingTxn: TxnEditableFields | null;
     onEditingTxnChange: (txn: TxnEditableFields) => void;
 
     onTxnSave: (txnId: string, txn: TxnEditableFields) => void;
+    onTxnDelete: (txnId: string) => void;
 }
 
 const TxnList: React.FC<TxnListProps> = (props) => {
     const options = useOptions();
-    const [txns, setTxns] = useState<TxnCalculations[]>(props.txns);
 
-    if (txns.length === 0) {
+    if (props.txns.length === 0) {
         return <div className="txn-list">No transactions found</div>;
     }
-    var txnColumns = txns.map((txn) => ({
+    var txnColumns = props.txns.map((txn) => ({
         txn: txn,
         columns: {
             "Date": new Date(txn.date).toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
@@ -58,15 +59,11 @@ const TxnList: React.FC<TxnListProps> = (props) => {
     const handleDelete = async () => {
         if (props.selectedTxnId) {
             await TxnsDB.delete(props.selectedTxnId);
-            await loadData();
-            props.onSelectTxn(null); // Deselect after deletion
+            props.onSelectTxn(null);
+            props.onTxnDelete(props.selectedTxnId);
         }
     };
 
-    const loadData = async () => {
-        const storedTxns = await TxnsDB.getAll();
-        setTxns(storedTxns);
-    };
 
     return (
         <div className="txn-list">
@@ -92,7 +89,7 @@ const TxnList: React.FC<TxnListProps> = (props) => {
                                     <td colSpan={Object.keys(row.columns).length}>
                                         <TxnEdit txn={props.editingTxn} personName={row.txn.personName} type={row.txn.type} 
                                         onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} 
-                                        deleteVisible={true} onDelete={handleDelete} />
+                                        deleteVisible={true} onDelete={() => props.onDeleteTxn(row.txn.id)} />
                                     </td>
                                 </tr>
                             }

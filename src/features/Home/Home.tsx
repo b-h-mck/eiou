@@ -80,6 +80,12 @@ const Home = () => {
         setTxnsByPersonId(calculatedTxns);
     };
 
+     // Load the data on page load
+     useEffect(() => {
+        loadData();
+    }, []);
+
+
     // Add a person to IndexedDB and reload data
     const addPerson = async (personEditableFields: PersonEditableFields) => {
         const person : Person = {

@@ -82,23 +82,7 @@
     transition: background-color 0.3s ease, opacity 0.3s ease;
 }
 
-.txn-edit-buttons button:first-of-type {
-    background-color: #007bff;
-    color: white;
-}
 
-.txn-edit-buttons button:first-of-type:hover {
-    background-color: #0056b3;
-}
-
-.txn-edit-buttons button:last-of-type {
-    background-color: #f44336;
-    color: white;
-}
-
-.txn-edit-buttons button:last-of-type:hover {
-    background-color: #d32f2f;
-}
 
 .txn-edit-buttons button:disabled {
     background-color: #cccccc; 
@@ -108,21 +92,30 @@
     pointer-events: none; 
 }
 
-.txn-edit-buttons .delete-button {
+.save-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
+
+.delete-button {
     background-color: red;
     color: white;
 }
 
-.txn-edit-buttons .delete-button:hover {
+.delete-button:hover {
     background-color: darkred;
 }
 
-.txn-edit-buttons .cancel-button {
+.cancel-button {
     background-color: #cccccc;
     color: #666666;
 }
 
-.txn-edit-buttons .cancel-button:hover {
+.cancel-button:hover {
     background-color: #999999;
 }
 
