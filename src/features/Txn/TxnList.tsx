@@ -1,20 +1,23 @@
 import { getTxnSummary, TxnCalculations, TxnEditableFields } from "./TxnModel";
 import "./TxnList.css";
 import { getBalanceString } from "../Person/PersonModel";
-import { Fragment  } from "react";
+import { Fragment } from "react";
 import TxnEdit from "./TxnEdit";
 import { formatCurrency, useOptions } from "../Settings/OptionsModel";
+import { TxnsDB } from "../../shared/store";
 
 interface TxnListProps {
     txns: TxnCalculations[];
 
     selectedTxnId: string | null;
     onSelectTxn: (txnId: string | null) => void;
+    onDeleteTxn: (txnId: string) => void;
 
     editingTxn: TxnEditableFields | null;
     onEditingTxnChange: (txn: TxnEditableFields) => void;
 
     onTxnSave: (txnId: string, txn: TxnEditableFields) => void;
+    onTxnDelete: (txnId: string) => void;
 }
 
 const TxnList: React.FC<TxnListProps> = (props) => {
@@ -53,6 +56,15 @@ const TxnList: React.FC<TxnListProps> = (props) => {
         props.onSelectTxn(null); // Deselect on cancel
     };
 
+    const handleDelete = async () => {
+        if (props.selectedTxnId) {
+            await TxnsDB.delete(props.selectedTxnId);
+            props.onSelectTxn(null);
+            props.onTxnDelete(props.selectedTxnId);
+        }
+    };
+
+
     return (
         <div className="txn-list">
             {/* Table layout for wide screens */}
@@ -76,7 +88,8 @@ const TxnList: React.FC<TxnListProps> = (props) => {
                                 <tr className="txn-edit-row">
                                     <td colSpan={Object.keys(row.columns).length}>
                                         <TxnEdit txn={props.editingTxn} personName={row.txn.personName} type={row.txn.type} 
-                                        onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} />
+                                        onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} 
+                                        deleteVisible={true} onDelete={() => props.onDeleteTxn(row.txn.id)} />
                                     </td>
                                 </tr>
                             }
@@ -96,7 +109,8 @@ const TxnList: React.FC<TxnListProps> = (props) => {
                         </div>
                         {props.selectedTxnId === row.txn.id && props.editingTxn && (
                             <div className="txn-edit-card">
-                                <TxnEdit txn={props.editingTxn} personName={row.txn.personName} type={row.txn.type} onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} />
+                                <TxnEdit txn={props.editingTxn} personName={row.txn.personName} type={row.txn.type} onChange={props.onEditingTxnChange} onSave={handleSave} onCancel={handleCancel} isEditingExistingTxn={true} 
+                                deleteVisible={true} onDelete={handleDelete} />
                             </div>
                         )}
                     </Fragment>

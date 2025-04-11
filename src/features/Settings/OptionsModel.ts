@@ -37,11 +37,9 @@ export const useOptions = () => {
   const [options, setOptions] = useState<Options>(defaultOptions);
 
   useEffect(() => {
-      console.log("Fetching options from DB....");
       const fetchOptions = async () => {
           const fetchedOptions = await OptionsDB.get();
           if (fetchedOptions) {
-              console.log("Fetched options:", fetchedOptions);
             setOptions(fetchedOptions);
           }
           else {

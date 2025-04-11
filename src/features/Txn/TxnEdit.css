@@ -82,23 +82,6 @@
     transition: background-color 0.3s ease, opacity 0.3s ease;
 }
 
-.txn-edit-buttons button:first-of-type {
-    background-color: #007bff;
-    color: white;
-}
-
-.txn-edit-buttons button:first-of-type:hover {
-    background-color: #0056b3;
-}
-
-.txn-edit-buttons button:last-of-type {
-    background-color: #f44336;
-    color: white;
-}
-
-.txn-edit-buttons button:last-of-type:hover {
-    background-color: #d32f2f;
-}
 
 
 .txn-edit-buttons button:disabled {
@@ -107,6 +90,33 @@
     cursor: not-allowed; 
     opacity: 0.6; 
     pointer-events: none; 
+}
+
+.save-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
+
+.delete-button {
+    background-color: red;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: darkred;
+}
+
+.cancel-button {
+    background-color: #cccccc;
+    color: #666666;
+}
+
+.cancel-button:hover {
+    background-color: #999999;
 }
 
 .slider-container {
