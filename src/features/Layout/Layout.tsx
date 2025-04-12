@@ -24,11 +24,9 @@ const Layout = () => {
                         <button className="nav-toggle" onClick={closeNav}><TiChevronLeftOutline /></button>
                     </header>
                     <ul>
-                        <li>
-                            <a href="/">Home</a>
-                            <a href="/settings">Settings</a>
-                            <a href="/help">Help</a>
-                        </li>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/settings">Settings</a></li>
+                        <li><a href="/help">Help</a></li>
                     </ul>
                     <footer>
                         <p>© 2025 eiou.</p>
