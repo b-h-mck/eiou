@@ -5,7 +5,7 @@ import "./Layout.css"
 import logo from "../../assets/eiou-wide.svg"
 import { TiChevronLeftOutline, TiThMenuOutline } from "react-icons/ti"
 
-const Layout = () => {
+const Layout = ({ TiChevronLeftOutline, TiThMenuOutline }) => {
     const [isNavOpen, setIsNavOpen] = useState(false)
 
     const toggleNav = () => {

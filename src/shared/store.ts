@@ -15,7 +15,6 @@ export const PeopleDB = createIdObjectAccessor<Person>(PEOPLE_STORE);
 export const TxnsDB = createIdObjectAccessor<Txn>(TXNS_STORE);
 export const OptionsDB = createSingletonObjectAccessor<Options>(OPTIONS_STORE);
 
-
 const initDB = async (version : number = DB_VERSION) => {
     const db = await openDB(DB_NAME, version, {
 
@@ -57,8 +56,6 @@ const initDB = async (version : number = DB_VERSION) => {
     return db;
 };
 
-
-
 export const deleteDB = async () : Promise<void> => {
     // Close any open connections to the database
     const db = await openDB(DB_NAME);
@@ -83,8 +80,6 @@ export const deleteDB = async () : Promise<void> => {
         };
     });
 }
-
-
 
 export type ExportedData = {
     version: number,
@@ -139,38 +134,36 @@ export const importDB = async (data: ExportedData) : Promise<void> => {
     console.log(`Database '${DB_NAME}' imported at version ${data.version}.`);
 }
 
-
-function createIdObjectAccessor<TObject>(storeName: string) {
+function createIdObjectAccessor<TObject>(storeName: string, dbInstance?: IDBPDatabase<unknown>) {
     return {
         get: async (id: string) => {
-            const db = await initDB();
+            const db = dbInstance || await initDB();
             return await (db.get(storeName, id) as Promise<TObject>);
         },
         getAll: async () => {
-            const db = await initDB();
+            const db = dbInstance || await initDB();
             return await (db.getAll(storeName) as Promise<TObject[]>);
         },
         put: async (object: TObject) => {
-            const db = await initDB();
+            const db = dbInstance || await initDB();
             await db.put(storeName, object);
         },
         delete: async (id: string) => {
-            const db = await initDB();
+            const db = dbInstance || await initDB();
             await db.delete(storeName, id);
         },
     }
 }
 
-
-function createSingletonObjectAccessor<TObject extends {} | null>(storeName: string) {
+function createSingletonObjectAccessor<TObject extends {} | null>(storeName: string, dbInstance?: IDBPDatabase<unknown>) {
     return {
         get: async () => {
-            const db = await initDB();
+            const db = dbInstance || await initDB();
             const result = await (db.getAll(storeName) as Promise<TObject[]>);
             return result.length > 0 ? result[0] : null;
         },
         put: async (object: TObject) => {
-            const db = await initDB();
+            const db = dbInstance || await initDB();
             await db.clear(storeName);
             await db.put(storeName, object);
         }
