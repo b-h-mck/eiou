@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { OptionsDB } from "../../shared/store";
 
 export type Options = {
+  activeLedgerId: string;
+};
+
+export type CurrencyOptions = {
   prefix: string;
   suffix: string;
   decimalPlaces: number;
@@ -11,8 +15,8 @@ export type Options = {
   maxAmount: number;
 };
 
-export function formatCurrency(amount: number, options: Options): string {
-  const { prefix, suffix, decimalPlaces, omitDecimalForWhole } = options;
+export function formatCurrency(amount: number, currencyOptions: CurrencyOptions): string {
+  const { prefix, suffix, decimalPlaces, omitDecimalForWhole } = currencyOptions;
 
   let formattedAmount = amount.toFixed(decimalPlaces);
 
@@ -23,7 +27,7 @@ export function formatCurrency(amount: number, options: Options): string {
   return `${prefix}${formattedAmount}${suffix}`;
 }
 
-export const defaultOptions: Options = {
+export const defaultCurrencyOptions: CurrencyOptions = {
   prefix: "$",
   suffix: "",
   decimalPlaces: 2,
@@ -34,7 +38,7 @@ export const defaultOptions: Options = {
 };
 
 export const useOptions = () => {
-  const [options, setOptions] = useState<Options>(defaultOptions);
+  const [options, setOptions] = useState<Options | null>(null);
 
   useEffect(() => {
       const fetchOptions = async () => {

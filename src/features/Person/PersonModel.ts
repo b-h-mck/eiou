@@ -8,6 +8,7 @@ export type PersonEditableFields = {
 
 export type Person = PersonEditableFields & {
     id: string;
+    ledgerId: string; // Added ledgerId field
 };
 
 export type PersonCalculations = Person & {

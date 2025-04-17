@@ -41,6 +41,7 @@ export type Txn = TxnEditableFields & {
     personId?: string;
     personName?: string;
     type: TxnType;
+    ledgerId: string; // Added ledgerId field
 };
 
 export type TxnCalculations = Txn & {

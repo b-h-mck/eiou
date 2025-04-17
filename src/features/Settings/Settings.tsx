@@ -1,22 +1,32 @@
 import { deleteDB, exportDB, importDB, parseExportedData } from "../../shared/store";
 import "./Settings.css";
 import { useEffect, useState } from "react";
-import { defaultOptions, Options } from "./OptionsModel";
 import { OptionsDB } from "../../shared/store";
+import { LedgersDB } from "../../shared/store";
+import { Ledger } from "../LedgerManagement/LedgerModel";
 
 const Settings = () => {
     const [message, setMessage] = useState("");
     const [isMessageVisible, setIsMessageVisible] = useState(false);
     const [confirmImportDisabled, setConfirmImportDisabled] = useState(true);
-    const [editingOptions, setEditingOptions] = useState<Options | null>(null);
+    const [ledgers, setLedgers] = useState<Ledger[]>([]);
+    const [activeLedgerId, setActiveLedgerId] = useState<string | null>(null);
 
-    const fetchOptions = async () => {
+    const fetchLedgers = async () => {
+        const storedLedgers = await LedgersDB.getAll();
+        setLedgers(storedLedgers);
+    };
+
+    const fetchActiveLedgerId = async () => {
         const options = await OptionsDB.get();
-        setEditingOptions(options || defaultOptions);
+        if (options && options.activeLedgerId) {
+            setActiveLedgerId(options.activeLedgerId);
+        }
     };
 
     useEffect(() => {
-        fetchOptions();
+        fetchLedgers();
+        fetchActiveLedgerId();
     }, []);
 
     const showMessage = (msg: string) => {
@@ -58,7 +68,6 @@ const Settings = () => {
                 const exportedDataObject = JSON.parse(e.target?.result as string);
                 const exportedData = parseExportedData(exportedDataObject);
                 await importDB(exportedData);
-                await fetchOptions(); // Refresh options after import
                 showMessage("Data imported successfully.");
             };
             reader.readAsText(file);
@@ -70,95 +79,40 @@ const Settings = () => {
         const confirmed = window.confirm("Are you sure you want to clear all data? This action cannot be undone.");
         if (confirmed) {
             await deleteDB();
-            await fetchOptions(); // Refresh options after delete
             showMessage("Database cleared successfully.");
         }
     };
 
-    const handleOptionsChange = (field: keyof Options, value: string | number | boolean) => {
-        setEditingOptions((prevOptions) => ({
-            ...prevOptions!,
-            [field]: value,
-        }));
-    };
-
-    const handleOptionsSave = async () => {
-        if (editingOptions) {
-            await OptionsDB.put(editingOptions);
-            await fetchOptions(); // Refresh options after save
-            showMessage("Options saved successfully.");
+    const handleLedgerChange = async (ledgerId: string) => {
+        const options = await OptionsDB.get();
+        if (options) {
+            options.activeLedgerId = ledgerId;
+            await OptionsDB.put(options);
+            setActiveLedgerId(ledgerId);
+            showMessage("Active ledger changed successfully.");
         }
     };
 
-    if (!editingOptions) {
-        return <div>Loading...</div>; // Show a loading state while options are being fetched
-    }
-
     return (
         <>
-            <section className="settings currency-options">
-                <h2>Currency Options</h2>
-                <label>
-                    Prefix:
-                    <input
-                        type="text"
-                        value={editingOptions.prefix}
-                        onChange={(e) => handleOptionsChange("prefix", e.target.value)}
-                        maxLength={10}
-                        pattern="^[^<>]*$"
-                    />
-                </label>
-                <label>
-                    Suffix:
-                    <input
-                        type="text"
-                        value={editingOptions.suffix}
-                        onChange={(e) => handleOptionsChange("suffix", e.target.value)}
-                        maxLength={10}
-                        pattern="^[^<>]*$"
-                    />
-                </label>
-                <label>
-                    Decimal Places:
-                    <input
-                        type="number"
-                        value={editingOptions.decimalPlaces}
-                        onChange={(e) => handleOptionsChange("decimalPlaces", parseInt(e.target.value))}
-                    />
-                </label>
-                <label className="checkbox-label">
-                    <input
-                        type="checkbox"
-                        checked={editingOptions.omitDecimalForWhole}
-                        onChange={(e) => handleOptionsChange("omitDecimalForWhole", e.target.checked)}
-                    />
-                    Omit Decimal for Whole Numbers
-                </label>
-                <label>
-                    Default Amount:
-                    <input
-                        type="number"
-                        value={editingOptions.defaultAmount}
-                        onChange={(e) => handleOptionsChange("defaultAmount", parseFloat(e.target.value))}
-                    />
-                </label>
-                <label>
-                    Step Amount:
-                    <input
-                        type="number"
-                        value={editingOptions.stepAmount}
-                        onChange={(e) => handleOptionsChange("stepAmount", parseFloat(e.target.value))}
-                    />
-                </label>
-                <label>
-                    Max Amount:
-                    <input
-                        type="number"
-                        value={editingOptions.maxAmount}
-                        onChange={(e) => handleOptionsChange("maxAmount", parseFloat(e.target.value))}
-                    />
-                </label>
-                <button className="save-options-button" onClick={handleOptionsSave}>Save Options</button>
+            <section className="settings ledger-management">
+                <h2>Ledger Management</h2>
+                <ul>
+                    {ledgers.map((ledger) => (
+                        <li key={ledger.id}>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="activeLedger"
+                                    value={ledger.id}
+                                    checked={ledger.id === activeLedgerId}
+                                    onChange={() => handleLedgerChange(ledger.id)}
+                                />
+                                {ledger.name}
+                            </label>
+                        </li>
+                    ))}
+                </ul>
                 <p className={`message ${isMessageVisible ? "visible" : "fade-out"}`}>{message ?? "\u00A0"}</p>
             </section>
             <section className="settings db-management">

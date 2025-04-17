@@ -2,21 +2,23 @@ import { openDB, unwrap } from "idb";
 import { Person } from "../features/Person/PersonModel";
 import { Txn } from "../features/Txn/TxnModel";
 import { Options } from "../features/Settings/OptionsModel";
+import { Ledger } from "../features/LedgerManagement/LedgerModel";
 
 const DB_NAME = "eiouDB";
-const DB_VERSION = 2; // Increment this when you change the database schema, and add a migration below.
+const DB_VERSION = 3; // Increment this when you change the database schema, and add a migration below.
 
 const PEOPLE_STORE = "people";
 const TXNS_STORE = "txns";
 const OPTIONS_STORE = "options";
+const LEDGERS_STORE = "ledgers";
 
 // These accessors provide access to the database stores to other parts of the app.
 export const PeopleDB = createIdObjectAccessor<Person>(PEOPLE_STORE);
 export const TxnsDB = createIdObjectAccessor<Txn>(TXNS_STORE);
 export const OptionsDB = createSingletonObjectAccessor<Options>(OPTIONS_STORE);
+export const LedgersDB = createIdObjectAccessor<Ledger>(LEDGERS_STORE);
 
-
-const initDB = async (version : number = DB_VERSION) => {
+const initDB = async (version: number = DB_VERSION) => {
     const db = await openDB(DB_NAME, version, {
 
         // The upgrade method here is used to both build the database from scratch and to migrate to a later version.
@@ -50,16 +52,53 @@ const initDB = async (version : number = DB_VERSION) => {
                     }
                     db.deleteObjectStore("persons"); 
                 };
+            }
+            if (v(3)) {
+                // v3: add the ledgers store and migrate existing data to the default ledger
+                db.createObjectStore(LEDGERS_STORE, { keyPath: "id" });
 
+                const defaultLedger = {
+                    id: crypto.randomUUID(),
+                    name: "Default",
+                    currencyOptions: await OptionsDB.get() || defaultOptions,
+                };
+
+                nativeTransaction.objectStore(LEDGERS_STORE).add(defaultLedger);
+
+                const storedPeople = nativeTransaction.objectStore(PEOPLE_STORE).getAll();
+                storedPeople.onsuccess = (event) => {
+                    const people = (event.target as IDBRequest).result;
+                    for (const person of people) {
+                        person.ledgerId = defaultLedger.id;
+                        nativeTransaction.objectStore(PEOPLE_STORE).put(person);
+                    }
+                };
+
+                const storedTxns = nativeTransaction.objectStore(TXNS_STORE).getAll();
+                storedTxns.onsuccess = (event) => {
+                    const txns = (event.target as IDBRequest).result;
+                    for (const txn of txns) {
+                        txn.ledgerId = defaultLedger.id;
+                        nativeTransaction.objectStore(TXNS_STORE).put(txn);
+                    }
+                };
+
+                const options = nativeTransaction.objectStore(OPTIONS_STORE).getAll();
+                options.onsuccess = (event) => {
+                    const optionsData = (event.target as IDBRequest).result;
+                    if (optionsData.length > 0) {
+                        const options = optionsData[0];
+                        options.activeLedgerId = defaultLedger.id;
+                        nativeTransaction.objectStore(OPTIONS_STORE).put(options);
+                    }
+                };
             }
         },
     });
     return db;
 };
 
-
-
-export const deleteDB = async () : Promise<void> => {
+export const deleteDB = async (): Promise<void> => {
     // Close any open connections to the database
     const db = await openDB(DB_NAME);
     db.close();
@@ -82,29 +121,27 @@ export const deleteDB = async () : Promise<void> => {
             console.warn(`Database deletion is blocked. Close all open connections.`);
         };
     });
-}
-
-
+};
 
 export type ExportedData = {
     version: number,
     stores: Record<string, any[]>
-}
+};
 
-export const exportDB = async () : Promise<ExportedData> => {
+export const exportDB = async (): Promise<ExportedData> => {
     const db = await initDB();
-    const result : ExportedData = {
+    const result: ExportedData = {
         version: db.version,
         stores: {}
-    }
+    };
     const storeNames = db.objectStoreNames;
     for (const storeName of storeNames) {
         result.stores[storeName] = await db.getAll(storeName);
     }
     return result;
-}
+};
 
-export const parseExportedData = (data: any) : ExportedData => {
+export const parseExportedData = (data: any): ExportedData => {
     // v1 has no version field and should be treated as the stores object
     if (!data.version) {
         return {
@@ -113,10 +150,9 @@ export const parseExportedData = (data: any) : ExportedData => {
         } as ExportedData;
     }
     return data as ExportedData;
-}
+};
 
-export const importDB = async (data: ExportedData) : Promise<void> => {
-
+export const importDB = async (data: ExportedData): Promise<void> => {
     // Delete the current database and start fresh.
     await deleteDB();
 
@@ -137,8 +173,7 @@ export const importDB = async (data: ExportedData) : Promise<void> => {
     // Close the connection, so that the next connection can upgrade the database if needed.
     db.close();
     console.log(`Database '${DB_NAME}' imported at version ${data.version}.`);
-}
-
+};
 
 function createIdObjectAccessor<TObject>(storeName: string) {
     return {
@@ -158,9 +193,8 @@ function createIdObjectAccessor<TObject>(storeName: string) {
             const db = await initDB();
             await db.delete(storeName, id);
         },
-    }
+    };
 }
-
 
 function createSingletonObjectAccessor<TObject extends {} | null>(storeName: string) {
     return {
@@ -174,5 +208,5 @@ function createSingletonObjectAccessor<TObject extends {} | null>(storeName: str
             await db.clear(storeName);
             await db.put(storeName, object);
         }
-    }
+    };
 }

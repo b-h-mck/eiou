@@ -1,0 +1,137 @@
+.ledger-management {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+}
+
+.ledger-management h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+.ledger-management ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ledger-management li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+}
+
+.ledger-management li:hover {
+    background-color: #e0f7fa;
+}
+
+.ledger-management li span {
+    flex-grow: 1;
+    font-size: 1rem;
+    color: #333;
+}
+
+.ledger-management li button {
+    padding: 4px 8px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.ledger-management li button:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.ledger-management li button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.ledger-management input[type="text"] {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 16px;
+}
+
+.ledger-management button.add-ledger {
+    padding: 8px 16px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.ledger-management button.add-ledger:hover {
+    background-color: #0056b3;
+}
+
+.ledger-management .edit-ledger {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+}
+
+.ledger-management .edit-ledger input[type="text"] {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 300px;
+}
+
+.ledger-management .edit-ledger button {
+    padding: 8px 16px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.ledger-management .edit-ledger button:hover {
+    background-color: #0056b3;
+}
+
+.ledger-management .edit-ledger button.cancel {
+    background-color: #f44336;
+    color: white;
+}
+
+.ledger-management .edit-ledger button.cancel:hover {
+    background-color: #d32f2f;
+}

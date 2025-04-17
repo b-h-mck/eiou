@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { TxnEditableFields, Txn, TxnCalculationsByPersonId, calculateTxns, TxnType } from "../Txn/TxnModel";
 import { calculatePeople, Person, PersonCalculations, PersonEditableFields } from "../Person/PersonModel";
-import { PeopleDB, TxnsDB } from "../../shared/store";
+import { PeopleDB, TxnsDB, OptionsDB } from "../../shared/store";
 import HomeUi from "./HomeUi";
 import { Mode } from "./ModeSelector";
 import { useOptions } from "../Settings/OptionsModel";
@@ -39,6 +39,9 @@ const Home = () => {
     // User-defined currency options
     const options = useOptions();
 
+    // Active ledger ID
+    const [activeLedgerId, setActiveLedgerId] = useState<string | null>(null);
+
     // Calculate the selected person and transaction type.
     const selectedPerson = useMemo(() => {
         return people.find((person) => person.id === selectedPersonId) || null;
@@ -72,10 +75,16 @@ const Home = () => {
     // Load and calculate all data from the IndexedDB. This is called on page load, and also whenever the data is updated to refresh the local state
     // (not particularly efficient to fully reload every time, but we can fix it if and when we have performance issues)
     const loadData = async () => {
+        const options = await OptionsDB.get();
+        if (options && options.activeLedgerId) {
+            setActiveLedgerId(options.activeLedgerId);
+        }
         const storedPeople = await PeopleDB.getAll();
         const storedTxns = await TxnsDB.getAll();
-        const calculatedTxns = calculateTxns(storedTxns);
-        const calculatedPeople = calculatePeople(storedPeople, calculatedTxns);
+        const filteredPeople = storedPeople.filter(person => person.ledgerId === options.activeLedgerId);
+        const filteredTxns = storedTxns.filter(txn => txn.ledgerId === options.activeLedgerId);
+        const calculatedTxns = calculateTxns(filteredTxns);
+        const calculatedPeople = calculatePeople(filteredPeople, calculatedTxns);
         setPeople(calculatedPeople);
         setTxnsByPersonId(calculatedTxns);
     };
@@ -91,6 +100,7 @@ const Home = () => {
         const person : Person = {
             ...personEditableFields,
             id: crypto.randomUUID(),
+            ledgerId: activeLedgerId,
         };
         await PeopleDB.put(person);
         await loadData();
@@ -106,8 +116,8 @@ const Home = () => {
             ...newTxn,
             id: crypto.randomUUID(),
             personId: selectedPersonId || "Someone",
-            type: txnType
-
+            type: txnType,
+            ledgerId: activeLedgerId,
         };
         if (txn.id) {
             await TxnsDB.put(txn);
@@ -120,7 +130,8 @@ const Home = () => {
     const updateTxn = async (id: string, updatedTxn: TxnEditableFields) => {
         const txn : Txn = {
             ...txnsById[id],
-            ...updatedTxn
+            ...updatedTxn,
+            ledgerId: activeLedgerId,
         };
         if (txn.id) {
             await TxnsDB.put(txn);

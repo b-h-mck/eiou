@@ -30,6 +30,8 @@ export interface HomeUiProps {
     onAddPersonSave: (person: PersonEditableFields) => void;
     onAddTxnSave: (txn: TxnEditableFields) => void;
     onUpdateTxnSave: (id: string, txn: TxnEditableFields) => void;
+
+    activeLedgerId: string | null;
 }
 
 import './Home.css';
@@ -104,7 +106,8 @@ const HomeUi = (props: HomeUiProps) => {
                                 id: crypto.randomUUID(),
                                 personId: selectedPerson?.id,
                                 personName: selectedPerson?.name,
-                                type: props.txnType!
+                                type: props.txnType!,
+                                ledgerId: props.activeLedgerId,
                             };
                             props.onAddTxnSave(txnToAdd);
                             props.onSelectMode(null);
